@@ -8,3 +8,16 @@
       X-Frame-Options = "DENY"
       X-Content-Type-Options = "nosniff"
       Referrer-Policy = "strict-origin-when-cross-origin"
+
+# The worker and manifest must always be revalidated, otherwise a new
+# deploy can sit behind a cached sw.js and never reach installed users.
+[[headers]]
+  for = "/sw.js"
+    [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+    [headers.values]
+    Cache-Control = "no-cache"
+    Content-Type = "application/manifest+json"
