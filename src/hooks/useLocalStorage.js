@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { isValidTask, createTaskId } from '../utils/taskUtils';
+import { isValidTask, clearInvalidDueDate, createTaskId } from '../utils/taskUtils';
 
 export function useLocalStorage(key, initialValue) {
   const [storedValue, setStoredValue] = useState(() => {
@@ -10,7 +10,9 @@ export function useLocalStorage(key, initialValue) {
       if (key === 'tasks') {
         if (!Array.isArray(parsed)) return initialValue;
         // Older saved tasks have no id, so give them one.
+        // A task with an impossible due date keeps its text and loses only the date.
         return parsed
+          .map(clearInvalidDueDate)
           .filter(isValidTask)
           .map(task => (task.id ? task : { ...task, id: createTaskId() }));
       }

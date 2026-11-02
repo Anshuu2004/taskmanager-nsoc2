@@ -1,3 +1,5 @@
+import { isValidDateKey } from './taskUtils.js';
+
 /**
  * Utility functions for Task Backup, Export, and Import
  */
@@ -115,6 +117,12 @@ export function validateTaskRecord(task, index) {
   }
   if (task.dueDate !== undefined && task.dueDate !== null && typeof task.dueDate !== 'string') {
     return { valid: false, error: `Task #${rowNum} has an invalid 'dueDate' (must be a string).` };
+  }
+  // Empty means no due date. Anything else has to be a real YYYY-MM-DD day.
+  // The whole import is rejected (like the other bad fields) rather than
+  // silently changing the date.
+  if (typeof task.dueDate === 'string' && task.dueDate.trim() !== '' && !isValidDateKey(task.dueDate.trim())) {
+    return { valid: false, error: `Task #${rowNum} has an invalid 'dueDate' "${task.dueDate}". Use a real date written as YYYY-MM-DD (for example 2026-02-28).` };
   }
   const priority = String(task.priority || '').trim().toLowerCase();
   if (!['low', 'medium', 'high'].includes(priority)) {
