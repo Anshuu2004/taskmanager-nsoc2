@@ -82,7 +82,10 @@ Enhancement suggestions are tracked as GitHub issues. When requesting a new feat
    ```
 
 5. **Make & Test Your Changes**:
-   - Open `index.html` in your browser.
+   - Run `npm ci`, then `npm run dev` and open Vite's printed URL (normally `http://localhost:8080`). Do not open `index.html` directly.
+   - Run `npm test` and `npm run build`; use `npm run preview` to inspect the production build.
+   - Test search combined with each filter and sort mode, JSON/CSV merge/replace, and streak/points behavior described in [README.md](README.md).
+   - Tab to Edit, completion, Delete, Undo and backup controls; verify Enter/Escape while editing.
    - Test task addition, priority filtering, inline editing, task deletion, overdue badges, and chart rendering.
    - Verify mobile responsiveness.
 
@@ -104,21 +107,21 @@ Enhancement suggestions are tracked as GitHub issues. When requesting a new feat
 
 ## 🎨 Coding Style & Best Practices
 
-### HTML (`index.html`)
+### JSX (`src/components/`, `src/App.jsx`)
 - Use semantic HTML5 tags (`<form>`, `<section>`, `<header>`, `<main>`, `<button>`).
 - Maintain WCAG accessibility standards (`aria-label`, `aria-pressed`, proper label associations).
 - Use double quotes `""` for HTML attributes.
 
-### CSS (`style.css`)
+### CSS (`src/index.css`)
 - Use CSS Variables defined in `:root` for colors, spacing, and shadows.
 - Write modular, readable CSS grouped with explanatory comments.
 - Avoid hardcoded pixel values where flexible units (`rem`, `%`, `vh`, `clamp`) work better.
 - Maintain dark-mode design harmony and responsive breakpoints (`@media (max-width: 680px)`).
 
-### JavaScript (`script.js`)
+### JavaScript (`src/hooks/`, `src/utils/`)
 - Write clean ES6+ JavaScript (arrow functions, `let`/`const`, template literals, destructuring).
 - Document functions using JSDoc-style comments.
-- Keep state mutations predictable and ensure `saveTasks()` is called when updating tasks.
+- Update React state immutably; `useLocalStorage` handles persistence. Keep pure task logic in `src/utils/`.
 - Ensure event handlers do not pollute the global namespace.
 
 ---
