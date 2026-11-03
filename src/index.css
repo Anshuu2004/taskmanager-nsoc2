@@ -823,6 +823,228 @@ h1 {
 }
 
 /* ==========================================================================
+   Subtasks / Checklist
+   ========================================================================== */
+
+/* The task row wraps so the checklist can take a full line under the title. */
+#todo-list li {
+  flex-wrap: wrap;
+}
+
+.subtask-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.subtask-progress-bar {
+  display: inline-block;
+  width: 56px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background-color: var(--active);
+}
+
+.subtask-progress-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--accent);
+  transition: width 200ms ease;
+}
+
+.subtask-progress.is-all-done {
+  color: var(--positive);
+}
+
+.subtask-progress.is-all-done .subtask-progress-bar > span {
+  background-color: var(--positive);
+}
+
+#todo-list li .subtask-toggle {
+  flex: 0 0 auto;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--raised);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 550;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+#todo-list li .subtask-toggle:hover,
+#todo-list li .subtask-toggle[aria-expanded="true"] {
+  background-color: var(--active);
+  color: var(--text);
+}
+
+.subtask-panel {
+  flex: 1 0 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0 6px 20px;
+  border-top: 1px solid var(--rule);
+}
+
+.subtask-empty {
+  margin: 0;
+  color: var(--faint);
+  font-size: 12px;
+}
+
+/* Scoped with #todo-list so the task row styles for "li" do not leak in. */
+#todo-list .subtask-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#todo-list .subtask-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 32px;
+  padding: 2px 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  animation: none;
+}
+
+#todo-list .subtask-list li:hover {
+  background-color: transparent;
+}
+
+.subtask-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.subtask-check input {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.subtask-text {
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+
+#todo-list .subtask-list li.is-done .subtask-text {
+  color: var(--faint);
+  text-decoration: line-through;
+}
+
+#todo-list .subtask-delete {
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--faint);
+  font-size: 11px;
+  font-weight: 550;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+#todo-list .subtask-delete:hover {
+  background-color: var(--pill-danger-bg);
+  color: var(--danger);
+}
+
+.subtask-form {
+  display: flex;
+  gap: 8px;
+}
+
+.subtask-input {
+  min-width: 0;
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+  background-color: var(--raised);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.subtask-input:focus,
+.subtask-check input:focus-visible {
+  border-color: var(--border-focus);
+  outline: 2px solid var(--border-focus);
+  outline-offset: 1px;
+}
+
+.subtask-add {
+  flex: 0 0 auto;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--raised);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 550;
+  cursor: pointer;
+}
+
+.subtask-add:hover {
+  background-color: var(--active);
+}
+
+@media (max-width: 680px) {
+  .subtask-panel {
+    padding-left: 8px;
+  }
+
+  .subtask-form {
+    flex-direction: column;
+  }
+
+  .subtask-add {
+    width: 100%;
+  }
+
+  /* Buttons take their own line under the title and wrap instead of overflowing. */
+  #todo-list li {
+    row-gap: 8px;
+  }
+
+  #todo-list li .action-buttons {
+    flex: 1 0 100%;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  #todo-list li .action-buttons button {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+/* ==========================================================================
    Analytics Charts Section
    ========================================================================== */
 

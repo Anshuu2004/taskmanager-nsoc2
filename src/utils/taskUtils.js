@@ -1,3 +1,5 @@
+import { isValidSubtaskList } from './subtaskUtils.js';
+
 export const priorityWeights = { high: 3, medium: 2, low: 1 };
 
 const DATE_KEY_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -56,6 +58,7 @@ export function isValidDateKey(value) {
 /**
  * Checks whether a stored record has the required task fields and types.
  * dueDate may be empty (no due date) or a real YYYY-MM-DD date.
+ * subtasks is optional (older tasks have none) but must be a valid list if present.
  */
 export function isValidTask(task) {
   if (!task || typeof task !== 'object' || Array.isArray(task)) return false;
@@ -71,7 +74,8 @@ export function isValidTask(task) {
     (task.dueDate === '' || isValidDateKey(task.dueDate)) &&
     ['low', 'medium', 'high'].includes(task.priority) &&
     typeof task.completed === 'boolean' &&
-    hasValidCompletedAt
+    hasValidCompletedAt &&
+    isValidSubtaskList(task.subtasks)
   );
 }
 

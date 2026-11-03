@@ -1,4 +1,5 @@
 import { isValidDateKey } from './taskUtils.js';
+import { sanitizeSubtasks, subtasksToText, textToSubtasks } from './subtaskUtils.js';
 
 /**
  * Utility functions for Task Backup, Export, and Import
@@ -45,14 +46,23 @@ export function exportTasksToJSON(taskList) {
  * Exports tasks to a standard CSV string (RFC 4180).
  */
 export function exportTasksToCSV(taskList) {
+  // The subtasks column is only added when some task has subtasks, so a backup
+  // of plain tasks keeps the same columns as before. One subtask per line,
+  // "[x] text" when done and "[ ] text" when not.
+  const hasSubtasks = taskList.some(task => Array.isArray(task.subtasks) && task.subtasks.length > 0);
   const headers = ['text', 'dueDate', 'priority', 'completed', 'completedAt'];
-  const rows = taskList.map(task => [
-    escapeCSVCell(task.text || ''),
-    escapeCSVCell(task.dueDate || ''),
-    escapeCSVCell(task.priority || 'medium'),
-    task.completed ? 'true' : 'false',
-    escapeCSVCell(task.completedAt || '')
-  ].join(','));
+  if (hasSubtasks) headers.push('subtasks');
+  const rows = taskList.map(task => {
+    const cells = [
+      escapeCSVCell(task.text || ''),
+      escapeCSVCell(task.dueDate || ''),
+      escapeCSVCell(task.priority || 'medium'),
+      task.completed ? 'true' : 'false',
+      escapeCSVCell(task.completedAt || '')
+    ];
+    if (hasSubtasks) cells.push(escapeCSVCell(subtasksToText(task.subtasks)));
+    return cells.join(',');
+  });
   return [headers.join(','), ...rows].join('\r\n');
 }
 
@@ -136,6 +146,18 @@ export function validateTaskRecord(task, index) {
       return { valid: false, error: `Task #${rowNum} has an invalid 'completedAt' timestamp.` };
     }
   }
+  // Optional: backups made before subtasks existed do not have the field.
+  if (task.subtasks !== undefined) {
+    if (!Array.isArray(task.subtasks)) {
+      return { valid: false, error: `Task #${rowNum} has an invalid 'subtasks' field (must be a list).` };
+    }
+    for (let i = 0; i < task.subtasks.length; i++) {
+      const sub = task.subtasks[i];
+      if (!sub || typeof sub !== 'object' || typeof sub.text !== 'string' || sub.text.trim() === '' || typeof sub.done !== 'boolean') {
+        return { valid: false, error: `Task #${rowNum} has an invalid subtask #${i + 1} (needs non-empty 'text' and a true/false 'done').` };
+      }
+    }
+  }
   return { valid: true };
 }
 
@@ -198,6 +220,8 @@ export function parseAndValidateCSV(csvContent) {
       completed: isCompleted,
       completedAt: completedAt
     };
+    const subtasks = headerMap['subtasks'] !== undefined ? textToSubtasks(row[headerMap['subtasks']] || '') : [];
+    if (subtasks.length > 0) candidate.subtasks = subtasks;
 
     const val = validateTaskRecord(candidate, i - 1);
     if (!val.valid) {
@@ -255,13 +279,19 @@ export function parseAndValidateJSON(jsonString) {
       completedAt = item.completedAt;
     }
 
-    validatedTasks.push({
+    const task = {
       text: item.text.trim(),
       dueDate: typeof item.dueDate === 'string' ? item.dueDate.trim() : '',
       priority: String(item.priority || 'medium').trim().toLowerCase(),
       completed: Boolean(item.completed),
       completedAt: completedAt
-    });
+    };
+    if (Array.isArray(item.subtasks) && item.subtasks.length > 0) {
+      // Keeps the ids from the file when there are some, otherwise makes new ones.
+      validatedTasks.push(sanitizeSubtasks({ ...task, subtasks: item.subtasks }));
+    } else {
+      validatedTasks.push(task);
+    }
   }
 
   return { success: true, tasks: validatedTasks };
