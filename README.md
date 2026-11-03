@@ -10,7 +10,7 @@
 <!-- ======================================================================= -->
 <div align="center">
   <a href="https://github.com/qwerty274/taskmanager-nsoc2">
-    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&duration=2800&pause=1000&color=A293FF&background=20212700&center=true&vCenter=true&multiline=true&width=760&height=52&lines=%E2%9A%A1+Organize+Smart.+Work+Fast.+Beat+Deadlines.;%F0%9F%8E%AF+Priority+Tags+%E2%80%A2+Inline+Editing+%E2%80%A2+Overdue+Alerts;%F0%9F%93%8A+Interactive+Analytics+%26+Monthly+Trends+with+Chart.js;%F0%9F%92%BE+100%25+Vanilla+JavaScript+%E2%80%A2+Zero+Dependencies+%E2%80%A2+LocalStorage" alt="Dynamic Typing Subtitle" />
+    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&duration=2800&pause=1000&color=A293FF&background=20212700&center=true&vCenter=true&multiline=true&width=760&height=52&lines=%E2%9A%A1+Organize+Smart.+Work+Fast.+Beat+Deadlines.;%F0%9F%8E%AF+Priority+Tags+%E2%80%A2+Inline+Editing+%E2%80%A2+Overdue+Alerts;%F0%9F%93%8A+Interactive+Analytics+%26+Monthly+Trends+with+Chart.js;%F0%9F%92%BE+100%25+React+%E2%80%A2+Vite+%E2%80%A2+LocalStorage" alt="Dynamic Typing Subtitle" />
   </a>
 </div>
 
@@ -24,7 +24,7 @@
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://app.netlify.com/start/deploy?repository=https://github.com/qwerty274/taskmanager-nsoc2)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-6366F1?style=for-the-badge&logo=git&logoColor=white)](CONTRIBUTING.md)
-[![JavaScript](https://img.shields.io/badge/ES6+-Vanilla%20JS-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![JavaScript](https://img.shields.io/badge/ES6+-React-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Chart.js](https://img.shields.io/badge/Chart.js-v4.0+-FF6384?style=for-the-badge&logo=chart.js&logoColor=white)](https://www.chartjs.org/)
 
 </div>
@@ -53,9 +53,9 @@
 
 ### 🌟 Overview
 
-**Task Manager & Productivity Dashboard** is a fast, responsive, and distraction-free web productivity platform built using pure **Vanilla HTML5, modern CSS3, and ES6+ JavaScript**, enhanced with interactive visual analytics by **[Chart.js](https://www.chartjs.org/)**.
+**Task Manager & Productivity Dashboard** is a fast, responsive, and distraction-free web productivity platform built using **React 18, Vite 6, CSS, and ES6+ JavaScript**, enhanced with interactive visual analytics by **[Chart.js](https://www.chartjs.org/)**.
 
-Whether tracking daily sprint objectives, prioritizing critical deadlines, reviewing monthly completion velocity, or keeping personal goals organized, Task Manager provides a seamless experience with zero runtime dependencies and 100% client-side privacy.
+Whether tracking daily sprint objectives, prioritizing critical deadlines, reviewing monthly completion velocity, or keeping personal goals organized, Task Manager provides a seamless experience with tasks stored locally in the browser rather than on an application server.
 
 ---
 
@@ -140,64 +140,99 @@ graph TD
 | :--- | :--- | :--- |
 | ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white) | **Structure** | Semantic HTML5, accessible form controls, ARIA attributes |
 | ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white) | **Styling** | Vanilla CSS, CSS Variables (`:root`), Flexbox, Grid, Glassmorphism, Micro-animations |
-| ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=flat-square&logo=javascript&logoColor=black) | **Logic & State** | Pure ES6+, DOM manipulation, Event delegation, `localStorage` API |
+| ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=flat-square&logo=javascript&logoColor=black) | **Logic & State** | React components and hooks, ES6+ utilities, `localStorage` API |
 | ![Chart.js](https://img.shields.io/badge/Chart.js-v4.0+-FF6384?style=flat-square&logo=chart.js&logoColor=white) | **Data Visualization** | Priority doughnut charts & month-by-month completion trend bar charts |
 
 </div>
 
-<details>
-<summary><b>🔍 Why Pure Vanilla Web Technologies? (Click to Expand)</b></summary>
-<br />
+### Runtime and privacy
 
-- ⚡ **Zero Build Step**: No `npm install`, no Webpack/Vite bundlers, no waiting for compiles.
-- 🪶 **Ultra Lightweight**: Sub-millisecond load times with negligible memory footprint.
-- 🔒 **Privacy-First**: No external tracking or remote server calls for task data.
-- 📱 **Universally Compatible**: Runs identically across any modern desktop, tablet, or mobile browser.
-
-</details>
-
----
+React renders the UI; Vite serves it during development and produces `dist/` for hosting.
+No database or application account is required. Tasks, theme, activity days and points are
+saved in this browser's `localStorage`. Clearing site data removes them; other browsers,
+profiles and devices do not automatically share them. Task backups do not include theme,
+activity history or the points ledger. Do not use the sample storage-reset commands below
+on your only copy of important tasks.
 
 ## 📁 Project Structure
 
-```bash
-taskmanager/
-├── 📄 index.html                # Main semantic application markup & canvas containers
-├── 🎨 style.css                 # Design system, CSS variables, glassmorphism & dark theme
-├── ⚡ script.js                 # Core application logic, event listeners & Chart.js engine
-├── ⚙️ netlify.toml              # Netlify static deployment & security headers
-├── 📖 README.md                 # Project documentation & animated showcase
-├── 🤝 CONTRIBUTING.md           # Contribution guidelines & branching workflow
-├── 📜 CODE_OF_CONDUCT.md        # Community participation standards
-├── ⚖️ LICENSE                   # MIT Open Source License
-├── 🖼️ assets/                   # Visual demo assets & graphics
-│   └── taskmanager-demo.gif     # Recorded application interaction animation
-└── 📂 .github/                  # GitHub configuration & templates
-    ├── PULL_REQUEST_TEMPLATE.md
-    └── ISSUE_TEMPLATE/
-        ├── bug_report.md
-        └── feature_request.md
+```text
+index.html                 # Vite entry; loads src/main.jsx
+vite.config.js             # React plugin; development port 8080
+src/
+  main.jsx                 # Mounts the React application and imports index.css
+  App.jsx                  # Task state, filters, history, backups and completion wiring
+  index.css                # Shared styling, responsive layout and focus styles
+  components/              # Forms, task controls, filters, charts, backup dialog and undo
+  hooks/                   # Local storage, theme and timed undo behavior
+  utils/                   # Task dates/sorting, backup validation, streaks and points
+package.json               # dev, build, preview and test commands
+package-lock.json          # Reproducible npm dependency versions
+CONTRIBUTING.md            # Contribution workflow and manual verification
 ```
-
----
 
 ## 🚀 Quick Start (React + Vite)
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+Use Node.js 20.19+ or 22.12+ and npm. From a cloned checkout:
 
-2. **Start the development server:**
-   ```bash
-   npm run dev
-   ```
-   Navigate to `http://localhost:8080` in your web browser.
+```bash
+npm ci
+npm run dev
+```
 
-3. **Build for production:**
-   ```bash
-   npm run build
-   ```
+Open the local URL printed by Vite (normally `http://localhost:8080`; another port
+may be chosen if it is busy). Opening `index.html` directly or using Live Server
+will not compile JSX or resolve package imports.
+
+```bash
+npm test                 # Configured backup, date and undo regression suites
+npm run build            # Production files in dist/
+npm run preview          # Preview that build; use the printed local URL
+```
+
+There is no configured lint script. `npm test` does not run every standalone
+`test-*.js` file; in particular it does not include the streak test file.
+
+### Search, filters and sorting
+
+Search matches task titles case-insensitively within the current filter. Clear search
+with the labelled × button. Statistics cards select All, Active, Completed or Overdue;
+History also exposes filter buttons and completion charts. Search and sorting continue
+to apply when changing a filter. Overdue means an unfinished task due before the local
+today; missing dates and tasks due today are not overdue.
+
+Choose one sort mode: earliest/latest due date, high/low priority, or title A–Z/Z–A.
+Missing dates stay last for date sorts. Sorting changes the displayed order, not saved
+task contents. All groups cards by due-date month, so it is not one globally sorted list
+across months. “Multi-criteria” refers to these available sort choices, not a UI for
+stacking several sort keys.
+
+### Export and import
+
+Open **Backup & Restore Tasks** from the header. Export all tasks as JSON or CSV;
+search and filters do not limit the export. The file name includes the local date.
+Select or drop a JSON/CSV backup, wait for validation, then press **Import Tasks**.
+Invalid files save nothing. **Merge** keeps current tasks and skips content duplicates;
+**Replace** clears the current list and uses the imported tasks. Export a backup before
+replacing. Importing tasks does not restore streaks or points.
+
+### Daily streaks and points
+
+Completing a task records activity on the local calendar day and awards 10 points once
+per task id. Reopening and completing that same task does not award another 10 points;
+reopening does not subtract existing points. A streak stays alive if the latest activity
+was today or yesterday. Milestone bonuses are 20 points at 3 days, 50 at 7 days, and 200
+at 30 days, each awarded once. Current streak, best streak and balance appear below the
+statistics. Importing already-completed tasks does not count as a new completion.
+
+### Keyboard controls
+
+Use Tab/Shift+Tab to reach labelled fields, filter buttons and each task's **Edit**,
+**Mark as done/active**, and **Delete** controls. Native buttons support Enter/Space.
+Use Edit instead of double-clicking a title: Enter saves, Escape cancels, and leaving
+the edit field saves a nonblank change. Delete exposes a temporary Undo action; hovering
+or focusing the undo toast pauses its timer. The backup dialog supports Escape to close;
+its file drop area supports Enter/Space, and import modes are native radio controls.
 
 ### 📅 Overdue Date Regression Checks
 
