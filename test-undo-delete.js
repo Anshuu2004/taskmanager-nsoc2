@@ -4,6 +4,7 @@ import {
   MAX_UNDO_ENTRIES,
   pushDeleted,
   popDeleted,
+  pausedAfterUndo,
   restoreTask
 } from './src/utils/undoDelete.js';
 
@@ -114,4 +115,20 @@ test('pushDeleted and popDeleted do not mutate the stack they are given', () => 
   pushDeleted(frozen, mk('b'), 1);
   popDeleted(frozen);
   assert.equal(frozen.length, 1);
+});
+
+test('undo keeps the pause while other entries are still pending', () => {
+  // toast is hovered / focused, 3 deletes pending, user hits Undo
+  assert.equal(pausedAfterUndo(true, 2), true);
+  assert.equal(pausedAfterUndo(true, 1), true);
+});
+
+test('undo resets the pause when the last entry is gone', () => {
+  // toast unmounts without mouseleave / blur, so a stale pause must not stick
+  assert.equal(pausedAfterUndo(true, 0), false);
+});
+
+test('undo never turns a pause on by itself', () => {
+  assert.equal(pausedAfterUndo(false, 2), false);
+  assert.equal(pausedAfterUndo(false, 0), false);
 });

@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { pushDeleted, popDeleted, UNDO_TIMEOUT_MS } from '../utils/undoDelete';
+import { pushDeleted, popDeleted, pausedAfterUndo, UNDO_TIMEOUT_MS } from '../utils/undoDelete';
 
 /**
  * Keeps a stack of recently deleted tasks and a single expiry timer.
@@ -44,8 +44,10 @@ export function useUndoDelete() {
 
   /** Pops the newest deleted entry and returns it (or null). */
   const undo = useCallback(() => {
-    pausedRef.current = false;
     const { entry, stack: next } = popDeleted(stackRef.current);
+    // Keep the pause while the toast stays up for the remaining entries, the
+    // button is reused so nothing would pause the timer again.
+    pausedRef.current = pausedAfterUndo(pausedRef.current, next.length);
     commit(next);
     startTimer();
     return entry;

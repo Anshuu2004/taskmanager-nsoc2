@@ -35,6 +35,19 @@ export function popDeleted(stack) {
 }
 
 /**
+ * Whether the expiry timer should stay paused after an undo. If entries are
+ * still pending the same toast (and the same button) stays mounted, so no new
+ * mouseenter / focus will fire: keep the pause the user already triggered. If
+ * the stack is empty the toast unmounts without a mouseleave / blur, so reset.
+ * @param {boolean} paused pause state before the undo
+ * @param {number} remaining entries left on the stack after the undo
+ * @returns {boolean}
+ */
+export function pausedAfterUndo(paused, remaining) {
+  return paused && remaining > 0;
+}
+
+/**
  * Put a deleted task back at its old position. If the list is shorter now
  * (tasks were added or imported since) the task goes at the end. A task whose
  * id is already in the list is not added twice.
