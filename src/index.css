@@ -905,10 +905,99 @@ h1 {
 }
 
 /* ==========================================================================
+   Undo Delete Toast
+   ========================================================================== */
+
+.undo-toast-region {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: min(32rem, calc(100vw - 2rem));
+  pointer-events: none;
+}
+
+.undo-toast {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem 0.625rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background-color: var(--raised);
+  color: var(--text);
+  font-size: 0.875rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+  animation: undo-toast-in 180ms ease-out;
+}
+
+body.light-mode .undo-toast {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+}
+
+.undo-toast-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.undo-toast-button,
+.undo-toast-dismiss {
+  flex: 0 0 auto;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background-color: transparent;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.undo-toast-button {
+  padding: 0.375rem 0.75rem;
+  color: var(--pill-active-ink);
+  background-color: var(--pill-active-bg);
+}
+
+.undo-toast-button:hover {
+  color: var(--accent-hover);
+}
+
+.undo-toast-dismiss {
+  padding: 0.25rem 0.5rem;
+  color: var(--muted);
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.undo-toast-dismiss:hover {
+  color: var(--text);
+  background-color: var(--active);
+}
+
+@keyframes undo-toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
    Responsive Breakpoints
    ========================================================================== */
 
 @media (max-width: 680px) {
+  .undo-toast-region {
+    bottom: 0.75rem;
+    width: calc(100vw - 1.5rem);
+  }
+
+  .undo-toast {
+    gap: 0.5rem;
+    padding-left: 0.75rem;
+  }
+
   body {
     padding: 20px 12px 40px;
   }
