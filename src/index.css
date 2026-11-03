@@ -899,6 +899,22 @@ h1 {
   cursor: not-allowed;
 }
 
+.chart-empty,
+.chart-summary {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.chart-empty {
+  padding: 24px 0;
+  text-align: center;
+}
+
+.chart-summary {
+  margin-bottom: 12px;
+}
+
 .chart-card canvas {
   width: 100%;
   max-height: 240px;

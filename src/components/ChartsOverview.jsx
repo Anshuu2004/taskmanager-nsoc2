@@ -74,6 +74,11 @@ export default function ChartsOverview({ tasks, isLight }) {
     }
   });
 
+  const monthTotal = weeks.reduce((sum, count) => sum + count, 0);
+  const bestCount = Math.max(...weeks);
+  const bestWeek = weeks.indexOf(bestCount) + 1;
+  const hasTasks = tasks.length > 0;
+
   const barColor = isLight ? '#0071e3' : '#0a84ff';
 
   const weeklyData = {
@@ -113,13 +118,21 @@ export default function ChartsOverview({ tasks, isLight }) {
 
       <div className="chart-card">
         <h3>Tasks by priority</h3>
-        <Doughnut id="priority-chart" data={priorityData} options={priorityOptions} />
-        <div id="priority-legend"></div>
+        {hasTasks ? (
+          <>
+            <Doughnut id="priority-chart" data={priorityData} options={priorityOptions} />
+            <div id="priority-legend"></div>
+          </>
+        ) : (
+          <p className="chart-empty">Add tasks to see your chart.</p>
+        )}
       </div>
 
       <div className="chart-card">
         <div className="weekly-chart-heading">
-          <h3 id="weekly-chart-title">Tasks completed this month</h3>
+          <h3 id="weekly-chart-title">
+            {isCurrentMonth ? 'Tasks completed this month' : `Tasks completed in ${monthName}`}
+          </h3>
           <div className="month-controls" aria-label="Choose chart month">
             <button
               id="previous-month"
@@ -140,7 +153,18 @@ export default function ChartsOverview({ tasks, isLight }) {
             </button>
           </div>
         </div>
-        <Bar id="weekly-chart" data={weeklyData} options={weeklyOptions} />
+        {!hasTasks ? (
+          <p className="chart-empty">Add tasks to see your chart.</p>
+        ) : monthTotal === 0 ? (
+          <p className="chart-empty">No tasks completed in {monthName}.</p>
+        ) : (
+          <>
+            <p id="weekly-summary" className="chart-summary">
+              {monthTotal} {monthTotal === 1 ? 'task' : 'tasks'} completed. Best week: Week {bestWeek} ({bestCount}).
+            </p>
+            <Bar id="weekly-chart" data={weeklyData} options={weeklyOptions} />
+          </>
+        )}
       </div>
     </section>
   );
