@@ -169,3 +169,20 @@ export function groupTasksByMonth(taskList, currentSort = 'default') {
       tasks: sortTasks(entry[1].tasks, currentSort)
     }));
 }
+
+/**
+ * The tasks the current filter and search show, in stored order.
+ */
+export function getVisibleTasks(tasks, currentFilter, searchQuery) {
+  return tasks
+    .filter(task => {
+      if (currentFilter === 'active') return !task.completed;
+      if (currentFilter === 'overdue-task') return isOverdue(task);
+      if (currentFilter === 'done') return task.completed;
+      return true;
+    })
+    .filter(task => {
+      if (!searchQuery) return true;
+      return task.text.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+}

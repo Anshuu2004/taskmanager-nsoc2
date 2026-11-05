@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { isOverdue } from '../utils/taskUtils';
 
-export default function TaskItem({ task, onToggleComplete, onDelete, onUpdateText }) {
+export default function TaskItem({ task, isSelected, onToggleSelect, onToggleComplete, onDelete, onUpdateText }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(task.text);
   const editInputRef = useRef(null);
@@ -36,7 +36,16 @@ export default function TaskItem({ task, onToggleComplete, onDelete, onUpdateTex
   const overdue = isOverdue(task);
 
   return (
-    <li className={task.completed ? 'is-complete' : ''}>
+    <li className={`${task.completed ? 'is-complete' : ''}${isSelected ? ' is-selected' : ''}`}>
+      <label className="task-select">
+        <input
+          type="checkbox"
+          aria-label={`Select task ${task.text}`}
+          checked={isSelected}
+          onChange={() => onToggleSelect(task)}
+        />
+      </label>
+
       <span
         className={`status-dot priority-${priorityClass}`}
         aria-label={`${task.priority || 'Medium'} priority`}

@@ -1,27 +1,19 @@
 import React from 'react';
 import TaskItem from './TaskItem';
-import { isOverdue, sortTasks, groupTasksByMonth } from '../utils/taskUtils';
+import { sortTasks, groupTasksByMonth, getVisibleTasks } from '../utils/taskUtils';
 
 export default function TaskList({
   tasks,
   currentFilter,
   searchQuery,
   currentSort,
+  selectedIds,
+  onToggleSelect,
   onToggleComplete,
   onDeleteTask,
   onUpdateTaskText
 }) {
-  const visibleTasks = tasks
-    .filter(task => {
-      if (currentFilter === 'active') return !task.completed;
-      if (currentFilter === 'overdue-task') return isOverdue(task);
-      if (currentFilter === 'done') return task.completed;
-      return true;
-    })
-    .filter(task => {
-      if (!searchQuery) return true;
-      return task.text.toLowerCase().includes(searchQuery.toLowerCase());
-    });
+  const visibleTasks = getVisibleTasks(tasks, currentFilter, searchQuery);
 
   if (visibleTasks.length === 0) {
     let emptyMsg = 'No tasks found. Add a task above to get started!';
@@ -62,6 +54,8 @@ export default function TaskList({
               <TaskItem
                 key={`${task.text}-${task.dueDate}-${tIdx}`}
                 task={task}
+                isSelected={selectedIds.has(task.id)}
+                onToggleSelect={onToggleSelect}
                 onToggleComplete={onToggleComplete}
                 onDelete={onDeleteTask}
                 onUpdateText={onUpdateTaskText}
@@ -81,6 +75,8 @@ export default function TaskList({
         <TaskItem
           key={`${task.text}-${task.dueDate}-${idx}`}
           task={task}
+          isSelected={selectedIds.has(task.id)}
+          onToggleSelect={onToggleSelect}
           onToggleComplete={onToggleComplete}
           onDelete={onDeleteTask}
           onUpdateText={onUpdateTaskText}

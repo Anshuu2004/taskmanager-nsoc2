@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test test-export-import.js test-dates.js test-undo-delete.js test-sw-logic.js"
+    "test": "node --test test-export-import.js test-dates.js test-undo-delete.js test-sw-logic.js test-bulk-actions.js"
   },
   "dependencies": {
     "chart.js": "^4.4.7",

@@ -5,11 +5,11 @@ import React, { useEffect } from 'react';
  * screen readers pick up the text when it appears. Hovering or focusing the
  * toast pauses the expiry timer (onPause / onResume).
  */
-export default function UndoToast({ task, count, onUndo, onDismiss, onPause, onResume }) {
+export default function UndoToast({ message, count, onUndo, onDismiss, onPause, onResume }) {
   // Ctrl/Cmd+Z undoes the last delete while the toast is up, so keyboard users
   // do not have to tab through the whole page to reach the button. Typing in a
   // field keeps the browser's own undo.
-  const visible = Boolean(task);
+  const visible = Boolean(message);
   useEffect(() => {
     if (!visible) return undefined;
     const handleKeyDown = (e) => {
@@ -30,7 +30,7 @@ export default function UndoToast({ task, count, onUndo, onDismiss, onPause, onR
       aria-live="polite"
       aria-atomic="true"
     >
-      {task && (
+      {message && (
         <div
           className="undo-toast"
           onMouseEnter={onPause}
@@ -38,9 +38,7 @@ export default function UndoToast({ task, count, onUndo, onDismiss, onPause, onR
           onFocus={onPause}
           onBlur={onResume}
         >
-          <span className="undo-toast-text">
-            {`Deleted "${task.text}"`}
-          </span>
+          <span className="undo-toast-text">{message}</span>
           <button
             type="button"
             className="undo-toast-button"

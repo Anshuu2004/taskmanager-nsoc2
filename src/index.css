@@ -802,6 +802,146 @@ h1 {
   color: var(--danger);
 }
 
+/* Bulk selection: checkbox on each row and the bar above the list */
+.task-select {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.task-select input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+#todo-list li.is-selected {
+  border-color: var(--border-focus);
+  background-color: var(--pill-active-bg);
+}
+
+/* Sticky so the actions stay in reach while ticking tasks further down a long
+   list. It sits in the page flow above the first row, so it never covers a row
+   for good: scrolling a row out from under it is always possible. */
+.bulk-bar {
+  position: sticky;
+  top: 8px;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin-top: 16px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-focus);
+  border-radius: var(--radius-control);
+  background-color: var(--raised);
+}
+
+.bulk-bar-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.bulk-bar-count {
+  margin-right: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bulk-btn {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--surface);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 550;
+  white-space: nowrap;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.bulk-btn:hover:not(:disabled) {
+  background-color: var(--active);
+}
+
+.bulk-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bulk-btn .status-dot {
+  width: 7px;
+  height: 7px;
+  flex-basis: 7px;
+}
+
+.bulk-btn-danger {
+  border-color: var(--pill-danger-border);
+  color: var(--danger);
+}
+
+.bulk-btn-danger:hover:not(:disabled) {
+  background-color: var(--pill-danger-bg);
+}
+
+@media (max-width: 680px) {
+  /* At 320px the header buttons stuck out 22px past the screen. That widened
+     the whole page and left the fixed undo toast too low to tap. */
+  .app-header {
+    flex-wrap: wrap;
+  }
+
+  /* Buttons take their own line under the title, a fifth item in the row
+     would squeeze the title to one letter per line. */
+  #todo-list li {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  #todo-list li .action-buttons {
+    flex: 1 0 100%;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  /* Bigger tap area for the checkbox on touch screens. */
+  .task-select {
+    width: 32px;
+    height: 32px;
+    margin: -8px -8px -8px -10px;
+  }
+
+  .bulk-bar {
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .bulk-bar-group {
+    flex: 1 0 100%;
+  }
+
+  .bulk-bar-group .bulk-btn {
+    flex: 1 1 0;
+    justify-content: center;
+    min-height: 34px;
+    padding: 0 6px;
+    font-size: 12px;
+  }
+}
+
 /* Empty State */
 #todo-list li.empty-state {
   display: flex;
@@ -1253,6 +1393,52 @@ body.light-mode dialog.backup-modal::backdrop {
   opacity: 0.4;
   cursor: not-allowed;
   pointer-events: none;
+}
+
+/* ==========================================================================
+   Confirm Dialog
+   ========================================================================== */
+
+dialog.confirm-modal {
+  max-width: 380px;
+}
+
+.confirm-modal-body {
+  padding: 20px 22px;
+}
+
+.confirm-modal-body h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.confirm-modal-body p {
+  margin: 6px 0 18px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.confirm-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.confirm-modal-actions .modal-btn {
+  flex: 1 1 0;
+}
+
+.modal-btn.confirm-modal-danger {
+  border-color: var(--pill-danger-border);
+  background-color: var(--pill-danger-bg);
+  color: var(--danger);
+}
+
+.modal-btn.confirm-modal-danger:hover:not(:disabled) {
+  background-color: var(--pill-danger-bg);
+  border-color: var(--danger);
 }
 
 /* Import Mode Radio Styles */

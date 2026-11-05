@@ -222,6 +222,14 @@ Invalid files save nothing. **Merge** keeps current tasks and skips content dupl
 **Replace** clears the current list and uses the imported tasks. Export a backup before
 replacing. Importing tasks does not restore streaks or points.
 
+### Bulk actions
+
+Tick the checkbox on a task and a bar shows up above the list. From there you can select
+every task on screen, mark the selection as done, set one priority for all of it, or delete
+it. Delete asks first, and a single **Undo** brings the whole batch back to where it was.
+The selection is not saved and clears after each action. Tasks hidden by a search or filter
+are left out, even if they were ticked before.
+
 ### Daily streaks and points
 
 Completing a task records activity on the local calendar day and awards 10 points once

@@ -60,3 +60,39 @@ export function restoreTask(tasks, entry) {
   const at = Math.max(0, Math.min(index, tasks.length));
   return [...tasks.slice(0, at), task, ...tasks.slice(at)];
 }
+
+/**
+ * Push tasks deleted in one go as a single entry, so one Undo brings all of
+ * them back and a big bulk delete cannot push older entries (or itself) off the
+ * stack. Items are kept lowest index first, see restoreEntry.
+ * @param {Array<{task: object, index: number}>} stack
+ * @param {Array<{task: object, index: number}>} items
+ * @returns {Array} a new stack
+ */
+export function pushDeletedGroup(stack, items) {
+  if (items.length === 0) return stack;
+  const group = [...items].sort((a, b) => a.index - b.index);
+  const next = [...stack, { group }];
+  return next.length > MAX_UNDO_ENTRIES ? next.slice(next.length - MAX_UNDO_ENTRIES) : next;
+}
+
+/**
+ * Undo one stack entry, single or group. A group goes back lowest index first:
+ * by the time a task is put back, everything that was in front of it already
+ * is, so its saved index is right again.
+ * @returns {Array} a new tasks array
+ */
+export function restoreEntry(tasks, entry) {
+  if (!entry || !entry.group) return restoreTask(tasks, entry);
+  return entry.group.reduce(restoreTask, tasks);
+}
+
+/**
+ * The text of the undo toast for a stack entry.
+ * @returns {string}
+ */
+export function undoMessage(entry) {
+  if (entry.group && entry.group.length > 1) return `Deleted ${entry.group.length} tasks`;
+  const { task } = entry.group ? entry.group[0] : entry;
+  return `Deleted "${task.text}"`;
+}

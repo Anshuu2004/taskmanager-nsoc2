@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { pushDeleted, popDeleted, pausedAfterUndo, UNDO_TIMEOUT_MS } from '../utils/undoDelete';
+import { pushDeleted, pushDeletedGroup, popDeleted, pausedAfterUndo, undoMessage, UNDO_TIMEOUT_MS } from '../utils/undoDelete';
 
 /**
  * Keeps a stack of recently deleted tasks and a single expiry timer.
@@ -42,6 +42,12 @@ export function useUndoDelete() {
     startTimer();
   }, [commit, startTimer]);
 
+  const recordDeleteGroup = useCallback((items) => {
+    pausedRef.current = false;
+    commit(pushDeletedGroup(stackRef.current, items));
+    startTimer();
+  }, [commit, startTimer]);
+
   /** Pops the newest deleted entry and returns it (or null). */
   const undo = useCallback(() => {
     const { entry, stack: next } = popDeleted(stackRef.current);
@@ -73,9 +79,10 @@ export function useUndoDelete() {
   useEffect(() => clearTimer, []);
 
   return {
-    latest: stack.length ? stack[stack.length - 1].task : null,
+    message: stack.length ? undoMessage(stack[stack.length - 1]) : null,
     count: stack.length,
     recordDelete,
+    recordDeleteGroup,
     undo,
     dismiss,
     pause,

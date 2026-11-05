@@ -8,11 +8,14 @@ import TaskList from './components/TaskList';
 import ChartsOverview from './components/ChartsOverview';
 import BackupModal from './components/BackupModal';
 import UndoToast from './components/UndoToast';
+import BulkActionBar from './components/BulkActionBar';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useTheme } from './hooks/useTheme';
+import { useTaskSelection } from './hooks/useTaskSelection';
 import { useUndoDelete } from './hooks/useUndoDelete';
-import { getTodayDate } from './utils/taskUtils';
-import { restoreTask } from './utils/undoDelete';
+import { getTodayDate, createTaskId, getVisibleTasks } from './utils/taskUtils';
+import { restoreEntry } from './utils/undoDelete';
+import { applyBulkAction, getDeletedItems, getNewlyCompleted } from './utils/bulkActions';
 import { loadEngineState, recordTaskCompletion, calcStreak, getBalance } from './utils/streakEngine';
 
 export default function App() {
@@ -27,6 +30,8 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentSort, setCurrentSort] = useState('default');
   const [, setLastRenderDate] = useState(getTodayDate());
+  const visibleTasks = getVisibleTasks(tasks, currentFilter, searchQuery);
+  const selection = useTaskSelection(visibleTasks);
 
   // Automatic overdue refresh when midnight passes or tab becomes visible
   useEffect(() => {
@@ -89,13 +94,14 @@ export default function App() {
 
   const handleUndoDelete = () => {
     const entry = undoDelete.undo();
-    if (entry) setTasks(prev => restoreTask(prev, entry));
+    if (entry) setTasks(prev => restoreEntry(prev, entry));
   };
 
   // An import replaces the whole list, so saved positions no longer mean anything.
+  // Imported records have no id yet, and selecting and moving tasks go by id.
   const handleTasksUpdate = (nextTasks) => {
     undoDelete.dismiss();
-    setTasks(nextTasks);
+    setTasks(nextTasks.map(task => (task.id ? task : { ...task, id: createTaskId() })));
   };
 
   const handleUpdateTaskText = (taskToUpdate, newText) => {
@@ -112,6 +118,20 @@ export default function App() {
 
   const handleClearSearch = () => {
     setSearchQuery('');
+  };
+
+  // Runs one bulk action on what is ticked and on screen, then clears the ticks.
+  const handleBulkAction = (action) => {
+    const selectedIds = new Set(selection.selectedTasks.map(task => task.id));
+    if (action.type === 'delete') {
+      undoDelete.recordDeleteGroup(getDeletedItems(tasks, selectedIds));
+    }
+    if (action.type === 'complete') {
+      // Same rule as completing one task: only a new completion counts.
+      getNewlyCompleted(tasks, selectedIds).forEach(task => setEngine(recordTaskCompletion(task.id)));
+    }
+    setTasks(prev => applyBulkAction(prev, selectedIds, action));
+    selection.clear();
   };
 
   return (
@@ -151,11 +171,23 @@ export default function App() {
         />
       )}
 
+      <BulkActionBar
+        selectedTasks={selection.selectedTasks}
+        visibleCount={visibleTasks.length}
+        onSelectAll={selection.selectAll}
+        onClear={selection.clear}
+        onComplete={() => handleBulkAction({ type: 'complete' })}
+        onSetPriority={(priority) => handleBulkAction({ type: 'priority', priority })}
+        onDelete={() => handleBulkAction({ type: 'delete' })}
+      />
+
       <TaskList
         tasks={tasks}
         currentFilter={currentFilter}
         searchQuery={searchQuery}
         currentSort={currentSort}
+        selectedIds={selection.ids}
+        onToggleSelect={selection.toggle}
         onToggleComplete={handleToggleComplete}
         onDeleteTask={handleDeleteTask}
         onUpdateTaskText={handleUpdateTaskText}
@@ -171,7 +203,7 @@ export default function App() {
       />
 
       <UndoToast
-        task={undoDelete.latest}
+        message={undoDelete.message}
         count={undoDelete.count}
         onUndo={handleUndoDelete}
         onDismiss={undoDelete.dismiss}
