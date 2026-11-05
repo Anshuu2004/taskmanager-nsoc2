@@ -194,3 +194,23 @@ test('subtasksToText and textToSubtasks agree and tolerate loose input', () => {
   assert.deepEqual(textToSubtasks(''), []);
   assert.deepEqual(subtasksToText(undefined), '');
 });
+
+test('sanitizeSubtasks gives repeated ids a new id and keeps the first', () => {
+  const task = {
+    text: 'Backup',
+    subtasks: [
+      { id: 'same', text: 'One', done: true },
+      { id: 'same', text: 'Two', done: false },
+      { id: 'same', text: 'Three', done: false }
+    ]
+  };
+
+  const cleaned = sanitizeSubtasks(task);
+  const ids = cleaned.subtasks.map(sub => sub.id);
+
+  assert.equal(ids[0], 'same');
+  assert.equal(new Set(ids).size, 3);
+
+  const toggled = toggleSubtask(cleaned, ids[1]);
+  assert.deepEqual(toggled.subtasks.map(sub => sub.done), [true, true, false]);
+});

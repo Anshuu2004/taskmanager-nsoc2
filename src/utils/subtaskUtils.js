@@ -52,13 +52,17 @@ export function sanitizeSubtasks(task) {
   const { subtasks, ...rest } = task;
   if (!Array.isArray(subtasks)) return rest;
 
+  // toggle and delete match by id, so a repeated id from an edited backup would
+  // act on every copy. The first one keeps its id, the rest get a new one.
+  const seenIds = new Set();
   const cleaned = subtasks
     .filter(item => item && typeof item === 'object' && typeof item.text === 'string' && item.text.trim() !== '')
-    .map(item => ({
-      id: typeof item.id === 'string' && item.id !== '' ? item.id : makeSubtaskId(),
-      text: item.text.trim(),
-      done: item.done === true
-    }));
+    .map(item => {
+      const hasUsableId = typeof item.id === 'string' && item.id !== '' && !seenIds.has(item.id);
+      const id = hasUsableId ? item.id : makeSubtaskId();
+      seenIds.add(id);
+      return { id, text: item.text.trim(), done: item.done === true };
+    });
   return { ...rest, subtasks: cleaned };
 }
 

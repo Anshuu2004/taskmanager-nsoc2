@@ -66,7 +66,6 @@ export default function TaskList({
                 onToggleComplete={onToggleComplete}
                 onDelete={onDeleteTask}
                 onUpdateText={onUpdateTaskText}
-          onUpdateTask={onUpdateTask}
                 onUpdateTask={onUpdateTask}
               />
             ))}
