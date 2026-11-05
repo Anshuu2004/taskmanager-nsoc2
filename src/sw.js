@@ -36,7 +36,9 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+  if (!event.data) return;
+  if (event.data.type === 'SKIP_WAITING') self.skipWaiting();
+  if (event.data.type === 'GET_VERSION') event.ports[0]?.postMessage(__SW_VERSION__);
 });
 
 async function staleWhileRevalidate(request) {

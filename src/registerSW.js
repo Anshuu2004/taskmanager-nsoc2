@@ -5,13 +5,15 @@
 const UPDATE_CHECK_MS = 60 * 60 * 1000;
 
 let waitingWorker = null;
+let waitingVersion = null;
 let reloading = false;
 const listeners = new Set();
 
-// The callback runs right away if an update is already waiting.
+// The callback gets the waiting version, and runs right away if an update is
+// already waiting.
 export function onUpdateReady(callback) {
   listeners.add(callback);
-  if (waitingWorker) callback();
+  if (waitingVersion) callback(waitingVersion);
   return () => listeners.delete(callback);
 }
 
@@ -19,9 +21,17 @@ export function applyUpdate() {
   if (waitingWorker) waitingWorker.postMessage({ type: 'SKIP_WAITING' });
 }
 
+// Asks the worker for its build version, the prompt needs it to tell one
+// update from the next. A newer worker can take over before the answer lands.
 function markWaiting(worker) {
   waitingWorker = worker;
-  listeners.forEach(callback => callback());
+  const channel = new MessageChannel();
+  channel.port1.onmessage = ({ data: version }) => {
+    if (worker !== waitingWorker) return;
+    waitingVersion = version;
+    listeners.forEach(callback => callback(version));
+  };
+  worker.postMessage({ type: 'GET_VERSION' }, [channel.port2]);
 }
 
 export function registerServiceWorker() {

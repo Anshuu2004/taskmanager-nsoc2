@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { onUpdateReady, applyUpdate } from '../registerSW';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { shouldPromptUpdate } from '../sw/swLogic';
 
 export default function UpdatePrompt() {
-  const [ready, setReady] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
+  const [waitingVersion, setWaitingVersion] = useState(null);
+  const [dismissedVersion, setDismissedVersion] = useLocalStorage('dismissedUpdateVersion', null);
 
-  useEffect(() => onUpdateReady(() => setReady(true)), []);
+  useEffect(() => onUpdateReady(setWaitingVersion), []);
 
-  const show = ready && !dismissed;
+  const show = shouldPromptUpdate(waitingVersion, dismissedVersion);
 
   return (
     <div className="update-prompt-region" role="status" aria-live="polite">
@@ -21,7 +23,7 @@ export default function UpdatePrompt() {
             <button
               type="button"
               className="update-prompt-btn update-prompt-btn-quiet"
-              onClick={() => setDismissed(true)}
+              onClick={() => setDismissedVersion(waitingVersion)}
             >
               Later
             </button>

@@ -57,3 +57,9 @@ export function decideStrategy(request, { origin, precacheUrls }) {
 export function isCacheable(response) {
   return !!response && (response.ok || response.type === 'opaque');
 }
+
+// "Later" only counts for the version it was clicked on, so a newer waiting
+// version gets the prompt again.
+export function shouldPromptUpdate(waitingVersion, dismissedVersion) {
+  return Boolean(waitingVersion) && waitingVersion !== dismissedVersion;
+}

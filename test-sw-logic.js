@@ -7,7 +7,8 @@ import {
   staleCacheNames,
   buildPrecacheList,
   decideStrategy,
-  isCacheable
+  isCacheable,
+  shouldPromptUpdate
 } from './src/sw/swLogic.js';
 
 const origin = 'https://tasks.example.app';
@@ -87,4 +88,16 @@ test('isCacheable accepts ok and opaque responses only', () => {
   assert.equal(isCacheable({ ok: false, type: 'opaque' }), true);
   assert.equal(isCacheable({ ok: false, type: 'basic', status: 404 }), false);
   assert.equal(isCacheable(undefined), false);
+});
+
+test('shouldPromptUpdate: nothing waiting means no prompt', () => {
+  assert.equal(shouldPromptUpdate(null, null), false);
+  assert.equal(shouldPromptUpdate(null, 'v2'), false);
+});
+
+test('shouldPromptUpdate: Later only hides the version it was clicked on', () => {
+  assert.equal(shouldPromptUpdate('v2', null), true);
+  assert.equal(shouldPromptUpdate('v2', 'v2'), false);
+  assert.equal(shouldPromptUpdate('v3', 'v2'), true);
+  assert.equal(shouldPromptUpdate('v3', 'v3'), false);
 });
