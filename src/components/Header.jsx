@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Header({ isLight, onToggleTheme, onOpenBackup }) {
+export default function Header({ isLight, onToggleTheme, onOpenBackup, onOpenShortcuts }) {
   return (
     <header className="app-header">
       <div className="brand">
@@ -11,6 +11,16 @@ export default function Header({ isLight, onToggleTheme, onOpenBackup }) {
         </div>
       </div>
       <div className="header-actions">
+        <button
+          id="shortcuts-toggle"
+          className="header-btn"
+          type="button"
+          onClick={onOpenShortcuts}
+          aria-haspopup="dialog"
+          aria-keyshortcuts="?"
+        >
+          Shortcuts
+        </button>
         <button
           id="backup-toggle"
           className="header-btn"

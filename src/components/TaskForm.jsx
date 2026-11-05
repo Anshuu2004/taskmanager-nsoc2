@@ -44,6 +44,7 @@ export default function TaskForm({ onAddTask, historyMode, onToggleHistory }) {
           type="text"
           placeholder="New Task..."
           aria-label="New task title"
+          aria-keyshortcuts="N"
           aria-invalid={error ? 'true' : undefined}
           aria-describedby={error ? 'todo-form-error' : undefined}
           value={text}

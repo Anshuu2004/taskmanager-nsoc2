@@ -233,6 +233,19 @@ statistics. Importing already-completed tasks does not count as a new completion
 
 ### Keyboard controls
 
+| Key | What it does |
+| :--- | :--- |
+| `N` | Jump to the new task field |
+| `/` | Jump to search |
+| `?` | Open the shortcuts list (also the **Shortcuts** button in the header on wider screens) |
+| `Esc` | Close the open dialog, or cancel a task edit |
+| `Ctrl + D` | Clear the text field you are typing in (`Cmd + D` on a Mac) |
+| `Ctrl + Z` | Undo a delete while the undo message is up (`Cmd + Z` on a Mac) |
+
+The single keys are ignored while you type in a field or select box and while a dialog is
+open, and anything held with Ctrl, Cmd or Alt is left to the browser. Ctrl + D is the one
+exception, and only inside a text field: anywhere else it still bookmarks the page.
+
 Use Tab/Shift+Tab to reach labelled fields, filter buttons and each task's **Edit**,
 **Mark as done/active**, and **Delete** controls. Native buttons support Enter/Space.
 Use Edit instead of double-clicking a title: Enter saves, Escape cancels, and leaving

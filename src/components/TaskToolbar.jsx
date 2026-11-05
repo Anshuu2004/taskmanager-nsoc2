@@ -16,6 +16,7 @@ export default function TaskToolbar({
           type="search"
           placeholder="Search tasks..."
           aria-label="Search tasks"
+          aria-keyshortcuts="/"
           autoComplete="off"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}

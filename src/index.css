@@ -1389,6 +1389,61 @@ body.light-mode dialog.backup-modal::backdrop {
   border: 1px solid rgba(10, 132, 255, 0.25);
 }
 
+/* ==========================================================================
+   Keyboard Shortcuts Dialog
+   ========================================================================== */
+
+dialog.shortcuts-modal {
+  max-width: 440px;
+}
+
+.shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 18px 22px 22px;
+}
+
+.shortcuts-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.shortcuts-row dt {
+  flex: 0 0 76px;
+}
+
+.shortcuts-row dd {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.shortcuts-row kbd {
+  display: inline-block;
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--raised);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Phones have no keyboard, and below this width a third button squeezes the
+   app title onto extra lines. The ? key still opens the dialog. */
+@media (max-width: 720px) {
+  #shortcuts-toggle {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
