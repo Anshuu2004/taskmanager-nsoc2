@@ -7,15 +7,19 @@ import FilterTabs from './components/FilterTabs';
 import TaskList from './components/TaskList';
 import ChartsOverview from './components/ChartsOverview';
 import BackupModal from './components/BackupModal';
+import UndoToast from './components/UndoToast';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useTheme } from './hooks/useTheme';
+import { useUndoDelete } from './hooks/useUndoDelete';
 import { getTodayDate } from './utils/taskUtils';
+import { restoreTask } from './utils/undoDelete';
 import { loadEngineState, recordTaskCompletion, calcStreak, getBalance } from './utils/streakEngine';
 
 export default function App() {
   const [tasks, setTasks] = useLocalStorage('tasks', []);
   const [engine, setEngine] = useState(() => loadEngineState());
   const { isLight, toggleTheme } = useTheme();
+  const undoDelete = useUndoDelete();
 
   const [isBackupOpen, setIsBackupOpen] = useState(false);
   const [historyMode, setHistoryMode] = useState(false);
@@ -77,7 +81,21 @@ export default function App() {
   };
 
   const handleDeleteTask = (taskToDelete) => {
+    const index = tasks.indexOf(taskToDelete);
+    if (index === -1) return;
+    undoDelete.recordDelete(taskToDelete, index);
     setTasks(prev => prev.filter(task => task !== taskToDelete));
+  };
+
+  const handleUndoDelete = () => {
+    const entry = undoDelete.undo();
+    if (entry) setTasks(prev => restoreTask(prev, entry));
+  };
+
+  // An import replaces the whole list, so saved positions no longer mean anything.
+  const handleTasksUpdate = (nextTasks) => {
+    undoDelete.dismiss();
+    setTasks(nextTasks);
   };
 
   const handleUpdateTaskText = (taskToUpdate, newText) => {
@@ -149,7 +167,16 @@ export default function App() {
         isOpen={isBackupOpen}
         onClose={() => setIsBackupOpen(false)}
         tasks={tasks}
-        onTasksUpdate={setTasks}
+        onTasksUpdate={handleTasksUpdate}
+      />
+
+      <UndoToast
+        task={undoDelete.latest}
+        count={undoDelete.count}
+        onUndo={handleUndoDelete}
+        onDismiss={undoDelete.dismiss}
+        onPause={undoDelete.pause}
+        onResume={undoDelete.resume}
       />
     </div>
   );
