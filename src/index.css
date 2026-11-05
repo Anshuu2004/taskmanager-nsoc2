@@ -1462,3 +1462,27 @@ body.light-mode dialog.backup-modal::backdrop {
   background-color: var(--active);
   color: var(--text);
 }
+
+/* Keep clear of the undo toast, they share the same spot. */
+body:has(.undo-toast) .update-prompt-region {
+  bottom: 5.5rem;
+}
+
+/* On phones a floating bar sits right on top of the task buttons, so the
+   prompt goes in the page above the app and scrolls away with it. These rules
+   stay down here because they need to come after the base ones above. */
+@media (max-width: 680px) {
+  .update-prompt-region {
+    position: static;
+    padding: 0;
+  }
+
+  .update-prompt {
+    flex: 1;
+    justify-content: space-between;
+    gap: 8px;
+    max-width: none;
+    margin-bottom: 14px;
+    padding: 10px 12px;
+  }
+}
