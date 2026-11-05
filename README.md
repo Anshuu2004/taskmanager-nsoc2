@@ -213,6 +213,15 @@ task contents. All groups cards by due-date month, so it is not one globally sor
 across months. “Multi-criteria” refers to these available sort choices, not a UI for
 stacking several sort keys.
 
+### Reordering tasks
+
+In the Active list, with no search and the sort set to Default, drag a task by the handle on
+its left or use its up and down buttons. The buttons work with the keyboard and on touch
+screens, where the drag handle is hidden. The new order is saved with your tasks, so it stays
+after a refresh. Other views do not offer reordering: **All** is grouped by month, and the
+other filters, search and sorting do not show the stored order. Completed tasks keep their
+place in the stored list while they are hidden.
+
 ### Export and import
 
 Open **Backup & Restore Tasks** from the header. Export all tasks as JSON or CSV;
@@ -305,7 +314,7 @@ Use browser developer tools to run each command, then reload the page:
 
 Exciting features planned for future releases:
 
-- [ ] 🔄 **Drag-and-Drop Reordering**: Interactive task sequencing using HTML5 Drag and Drop API.
+- [x] 🔄 **Drag-and-Drop Reordering**: Interactive task sequencing using HTML5 Drag and Drop API.
 - [ ] 🏷️ **Custom Tags & Categories**: Multi-label tagging with custom color badges.
 - [ ] 📥 **Data Import / Export**: One-click JSON / CSV backup and restore.
 - [ ] 📋 **Subtasks & Nested Checklists**: Granular sub-item progress tracking.

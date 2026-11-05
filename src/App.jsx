@@ -11,8 +11,9 @@ import UndoToast from './components/UndoToast';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useTheme } from './hooks/useTheme';
 import { useUndoDelete } from './hooks/useUndoDelete';
-import { getTodayDate } from './utils/taskUtils';
+import { getTodayDate, createTaskId } from './utils/taskUtils';
 import { restoreTask } from './utils/undoDelete';
+import { canReorder, moveTask, getMoveMessage } from './utils/reorderUtils';
 import { loadEngineState, recordTaskCompletion, calcStreak, getBalance } from './utils/streakEngine';
 
 export default function App() {
@@ -26,6 +27,8 @@ export default function App() {
   const [currentFilter, setCurrentFilter] = useState('active');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentSort, setCurrentSort] = useState('default');
+  const [moveMessage, setMoveMessage] = useState('');
+  const reorderEnabled = canReorder(currentFilter, searchQuery, currentSort);
   const [, setLastRenderDate] = useState(getTodayDate());
 
   // Automatic overdue refresh when midnight passes or tab becomes visible
@@ -83,7 +86,7 @@ export default function App() {
   const handleDeleteTask = (taskToDelete) => {
     const index = tasks.indexOf(taskToDelete);
     if (index === -1) return;
-    undoDelete.recordDelete(taskToDelete, index);
+    undoDelete.recordDelete(taskToDelete, index, tasks[index - 1]?.id);
     setTasks(prev => prev.filter(task => task !== taskToDelete));
   };
 
@@ -93,9 +96,10 @@ export default function App() {
   };
 
   // An import replaces the whole list, so saved positions no longer mean anything.
+  // Imported records have no id yet, and selecting and moving tasks go by id.
   const handleTasksUpdate = (nextTasks) => {
     undoDelete.dismiss();
-    setTasks(nextTasks);
+    setTasks(nextTasks.map(task => (task.id ? task : { ...task, id: createTaskId() })));
   };
 
   const handleUpdateTaskText = (taskToUpdate, newText) => {
@@ -108,6 +112,14 @@ export default function App() {
 
   const handleToggleHistory = () => {
     setHistoryMode(prev => !prev);
+  };
+
+  // The tasks array is saved as is, so the new order survives a refresh.
+  const handleMoveTask = (task, target, place) => {
+    const next = moveTask(tasks, task, target, place);
+    if (next === tasks) return;
+    setTasks(next);
+    setMoveMessage(getMoveMessage(next, task));
   };
 
   const handleClearSearch = () => {
@@ -155,11 +167,20 @@ export default function App() {
         tasks={tasks}
         currentFilter={currentFilter}
         searchQuery={searchQuery}
+        reorderEnabled={reorderEnabled}
+        onMoveTask={handleMoveTask}
         currentSort={currentSort}
         onToggleComplete={handleToggleComplete}
         onDeleteTask={handleDeleteTask}
         onUpdateTaskText={handleUpdateTaskText}
       />
+
+      {!reorderEnabled && tasks.length > 0 && (
+        <p className="reorder-hint">
+          To reorder tasks, open the Active list with no search and sort set to Default.
+        </p>
+      )}
+      <p className="visually-hidden" role="status">{moveMessage}</p>
 
       {historyMode && <ChartsOverview tasks={tasks} isLight={isLight} />}
 

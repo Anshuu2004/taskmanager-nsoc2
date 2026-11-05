@@ -36,9 +36,9 @@ export function useUndoDelete() {
 
   // pausedRef is reset on every action: a toast that unmounts while hovered or
   // focused never fires mouseleave / blur, which would leave the timer stuck.
-  const recordDelete = useCallback((task, index) => {
+  const recordDelete = useCallback((task, index, afterId) => {
     pausedRef.current = false;
-    commit(pushDeleted(stackRef.current, task, index));
+    commit(pushDeleted(stackRef.current, task, index, afterId));
     startTimer();
   }, [commit, startTimer]);
 

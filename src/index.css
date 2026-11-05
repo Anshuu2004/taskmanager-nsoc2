@@ -682,6 +682,118 @@ h1 {
   background-color: transparent;
 }
 
+/* Reordering: drag handle, move buttons and the line that shows the drop spot */
+.drag-handle {
+  flex: 0 0 auto;
+  margin: -6px -6px -6px -8px;
+  padding: 6px 4px;
+  color: var(--faint);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.2em;
+  line-height: 1;
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-handle:hover {
+  color: var(--text);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* On the children, the row's entrance animation keeps its own opacity at 1. */
+#todo-list li.is-dragging > * {
+  opacity: 0.45;
+}
+
+#todo-list li.drop-before {
+  box-shadow: 0 -2px 0 0 var(--accent);
+}
+
+#todo-list li.drop-after {
+  box-shadow: 0 2px 0 0 var(--accent);
+}
+
+.move-buttons {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 2px;
+}
+
+#todo-list li .move-button {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--raised);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1;
+}
+
+#todo-list li .move-button:hover:not(:disabled) {
+  background-color: var(--active);
+  color: var(--text);
+}
+
+#todo-list li .move-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Where the row is allowed to wrap, the buttons drop under the title instead
+   of squeezing it to a few letters. */
+#todo-list li .task-details {
+  flex-basis: 140px;
+}
+
+.reorder-hint {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Native drag and drop does not work on touch screens, the move buttons do
+   that job there. */
+@media (hover: none) {
+  .drag-handle {
+    display: none;
+  }
+}
+
+@media (max-width: 680px) {
+  /* Buttons take their own line under the title, the move buttons would
+     squeeze the title to one letter per line. */
+  #todo-list li {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  #todo-list li .action-buttons {
+    flex: 1 0 100%;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  /* Bigger tap targets, pushed to the far end of the line. */
+  .move-buttons {
+    order: 1;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  #todo-list li .move-button {
+    width: 36px;
+    height: 36px;
+    font-size: 15px;
+  }
+}
+
 /* Status Indicator Dots */
 .status-dot {
   display: inline-block;
