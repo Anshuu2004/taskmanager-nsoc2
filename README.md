@@ -163,9 +163,15 @@ src/
   main.jsx                 # Mounts the React application and imports index.css
   App.jsx                  # Task state, filters, history, backups and completion wiring
   index.css                # Shared styling, responsive layout and focus styles
+  sw.js                    # Service worker source, bundled into dist/sw.js
+  registerSW.js            # Registers the worker and reports waiting updates
+  sw/                      # Pure service worker helpers, covered by test-sw-logic.js
   components/              # Forms, task controls, filters, charts, backup dialog and undo
   hooks/                   # Local storage, theme and timed undo behavior
   utils/                   # Task dates/sorting, backup validation, streaks and points
+public/                    # Web app manifest and icons
+vite-sw-plugin.js          # Builds dist/sw.js with a version hash and precache list
+netlify.toml               # Netlify build and cache header rules
 package.json               # dev, build, preview and test commands
 package-lock.json          # Reproducible npm dependency versions
 CONTRIBUTING.md            # Contribution workflow and manual verification
@@ -185,7 +191,7 @@ may be chosen if it is busy). Opening `index.html` directly or using Live Server
 will not compile JSX or resolve package imports.
 
 ```bash
-npm test                 # Configured backup, date and undo regression suites
+npm test                 # Configured backup, date, undo and service worker regression suites
 npm run build            # Production files in dist/
 npm run preview          # Preview that build; use the printed local URL
 ```
@@ -234,6 +240,40 @@ the edit field saves a nonblank change. Delete exposes a temporary Undo action; 
 or focusing the undo toast pauses its timer. The backup dialog supports Escape to close;
 its file drop area supports Enter/Space, and import modes are native radio controls.
 
+### Install and offline use
+
+The production build can be installed as an app and keeps working offline. The service
+worker only runs in production builds on HTTPS or localhost, so use the deployed site or
+`npm run build` with `npm run preview`. `npm run dev` does not register it.
+
+**Install:** in Chrome or Edge on desktop, use the install icon in the address bar or the
+browser menu. In Chrome on Android, open the menu and choose **Add to Home screen** or
+**Install app**. In Safari on iPhone or iPad, use **Share**, then **Add to Home Screen**.
+
+**Offline:** the first online visit caches the app. After that it opens without a network
+and tasks keep saving to `localStorage` as usual. The Google font only shows offline if it
+was cached on an earlier visit, otherwise the browser uses a system font.
+
+**Updates:** a new deploy downloads in the background, then a **New version available**
+prompt appears. **Reload** switches to it right away. **Later** hides the prompt for that
+version only: a newer version asks again, and the skipped one starts by itself once every
+tab and window of the app has been closed. On phones the prompt sits at the top of the
+page, above the app, so it stays clear of the task buttons and scrolls away with the page.
+
+**Troubleshooting:**
+
+- **No install option:** check that you are on HTTPS or localhost, not in a private window,
+  and that the app is not already installed. Chrome DevTools lists what is blocking it
+  under Application > Manifest.
+- **Stuck on an old version:** close every tab and window of the app and open it again. As
+  a last resort, unregister the worker in DevTools under Application > Service workers and
+  reload. This does not touch your tasks.
+- **Blank page while offline:** the app has to be opened once while online first.
+- **Clearing site data** also deletes your tasks, so export a backup before doing it.
+- **Hosting outside Netlify:** `netlify.toml` sends `Cache-Control: no-cache` for `sw.js`
+  and `manifest.webmanifest`. Send the same header on other hosts so new versions show up
+  quickly.
+
 ### 📅 Overdue Date Regression Checks
 
 1. **Yesterday's due date:** Add an active task due yesterday. Confirm that it receives an **Overdue** badge and appears under the **Overdue** history filter.
@@ -271,7 +311,7 @@ Exciting features planned for future releases:
 - [ ] 📋 **Subtasks & Nested Checklists**: Granular sub-item progress tracking.
 - [x] 🔍 **Task Search & Multi-Criteria Sorting**: Live search by keyword and dynamic sorting by date, priority, or title.
 - [x] ☀️ **Dark / Light Theme Switcher**: Dynamic theme toggle with persistent preference.
-- [ ] 📱 **Progressive Web App (PWA)**: Offline service workers and mobile app installability.
+- [x] 📱 **Progressive Web App (PWA)**: Offline service workers and mobile app installability.
 
 ---
 

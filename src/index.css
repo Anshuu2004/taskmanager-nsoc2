@@ -1395,3 +1395,94 @@ body.light-mode dialog.backup-modal::backdrop {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==========================================================================
+   Update prompt (service worker found a new version)
+   ========================================================================== */
+
+.update-prompt-region {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.update-prompt {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 420px;
+  padding: 12px 16px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--border);
+  background-color: var(--raised);
+  color: var(--text);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+}
+
+.update-prompt-text {
+  margin: 0;
+  font-size: 14px;
+}
+
+.update-prompt-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.update-prompt-btn {
+  min-height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background-color: var(--primary);
+  color: var(--primary-ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.update-prompt-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+.update-prompt-btn-quiet {
+  background-color: transparent;
+  color: var(--muted);
+}
+
+.update-prompt-btn-quiet:hover {
+  background-color: var(--active);
+  color: var(--text);
+}
+
+/* Keep clear of the undo toast, they share the same spot. */
+body:has(.undo-toast) .update-prompt-region {
+  bottom: 5.5rem;
+}
+
+/* On phones a floating bar sits right on top of the task buttons, so the
+   prompt goes in the page above the app and scrolls away with it. These rules
+   stay down here because they need to come after the base ones above. */
+@media (max-width: 680px) {
+  .update-prompt-region {
+    position: static;
+    padding: 0;
+  }
+
+  .update-prompt {
+    flex: 1;
+    justify-content: space-between;
+    gap: 8px;
+    max-width: none;
+    margin-bottom: 14px;
+    padding: 10px 12px;
+  }
+}
