@@ -256,6 +256,14 @@ h1 {
   border-color: var(--border-focus);
 }
 
+.header-btn:focus-visible,
+.theme-btn:focus-visible,
+#theme-toggle:focus-visible,
+#backup-toggle:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
 /* ==========================================================================
    Task Input Form
    ========================================================================== */
@@ -311,6 +319,11 @@ h1 {
   background-color: var(--primary-hover);
 }
 
+#todo-form button[type="submit"]:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
 #todo-form .history-button {
   border: 1px solid var(--border);
   background-color: var(--raised);
@@ -320,6 +333,11 @@ h1 {
 #todo-form .history-button:hover {
   background-color: var(--active);
   border-color: var(--border-focus);
+}
+
+#todo-form .history-button:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
 }
 
 /* ==========================================================================
@@ -357,6 +375,12 @@ h1 {
 }
 
 .stat-card:hover {
+  background-color: var(--raised);
+}
+
+.stat-card:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
   background-color: var(--raised);
 }
 
@@ -545,7 +569,8 @@ h1 {
   transition: color 150ms ease, background-color 150ms ease;
 }
 
-.search-clear:hover {
+.search-clear:hover,
+.search-clear:focus-visible {
   background-color: var(--active);
   color: var(--text);
 }
@@ -611,6 +636,13 @@ h1 {
 }
 
 #filters button:hover {
+  background-color: var(--raised);
+  color: var(--text);
+}
+
+#filters button:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
   background-color: var(--raised);
   color: var(--text);
 }
@@ -779,6 +811,12 @@ h1 {
   color: var(--text);
 }
 
+#todo-list li .done-button:focus-visible,
+#todo-list li .edit-button:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
 #todo-list li.is-complete .done-button {
   border-color: rgba(48, 209, 88, 0.3);
   background-color: rgba(48, 209, 88, 0.12);
@@ -797,7 +835,10 @@ h1 {
   transition: background-color 150ms ease, color 150ms ease;
 }
 
-#todo-list li .delete-button:hover {
+#todo-list li .delete-button:hover,
+#todo-list li .delete-button:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
   background-color: var(--pill-danger-bg);
   color: var(--danger);
 }
@@ -894,6 +935,13 @@ h1 {
   border-color: var(--border-focus);
 }
 
+.month-controls button:focus-visible:not(:disabled) {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  background-color: var(--active);
+  border-color: var(--border-focus);
+}
+
 .month-controls button:disabled {
   opacity: 0.35;
   cursor: not-allowed;
@@ -978,8 +1026,15 @@ body.light-mode .undo-toast {
   background-color: var(--pill-active-bg);
 }
 
-.undo-toast-button:hover {
+.undo-toast-button:hover,
+.undo-toast-button:focus-visible {
   color: var(--accent-hover);
+}
+
+.undo-toast-dismiss:hover,
+.undo-toast-dismiss:focus-visible {
+  color: var(--text);
+  background-color: var(--active);
 }
 
 .undo-toast-dismiss {
@@ -1237,6 +1292,11 @@ body.light-mode dialog.backup-modal::backdrop {
   border-color: var(--border-focus);
 }
 
+.modal-btn:focus-visible:not(:disabled) {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
 .modal-btn-primary {
   width: 100%;
   background-color: var(--primary);
@@ -1451,6 +1511,17 @@ body.light-mode dialog.backup-modal::backdrop {
 
 .update-prompt-btn:hover {
   background-color: var(--primary-hover);
+}
+
+.update-prompt-btn:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.update-prompt-btn-quiet:hover,
+.update-prompt-btn-quiet:focus-visible {
+  background-color: var(--active);
+  color: var(--text);
 }
 
 .update-prompt-btn-quiet {
