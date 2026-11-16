@@ -112,6 +112,12 @@ export default function App() {
     );
   };
 
+  // Swaps one task for updater(task). Used for changes that do not need their
+  // own handler, like the subtask checklist.
+  const handleUpdateTask = (taskToUpdate, updater) => {
+    setTasks(prev => prev.map(task => (task === taskToUpdate ? updater(task) : task)));
+  };
+
   const handleToggleHistory = () => {
     setHistoryMode(prev => !prev);
   };
@@ -191,6 +197,7 @@ export default function App() {
         onToggleComplete={handleToggleComplete}
         onDeleteTask={handleDeleteTask}
         onUpdateTaskText={handleUpdateTaskText}
+        onUpdateTask={handleUpdateTask}
       />
 
       {historyMode && <ChartsOverview tasks={tasks} isLight={isLight} />}

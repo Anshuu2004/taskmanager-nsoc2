@@ -11,7 +11,8 @@ export default function TaskList({
   onToggleSelect,
   onToggleComplete,
   onDeleteTask,
-  onUpdateTaskText
+  onUpdateTaskText,
+  onUpdateTask
 }) {
   const visibleTasks = getVisibleTasks(tasks, currentFilter, searchQuery);
 
@@ -52,13 +53,14 @@ export default function TaskList({
             )}
             {group.tasks.map((task, tIdx) => (
               <TaskItem
-                key={`${task.text}-${task.dueDate}-${tIdx}`}
+                key={task.id || `${task.text}-${task.dueDate}-${tIdx}`}
                 task={task}
                 isSelected={selectedIds.has(task.id)}
                 onToggleSelect={onToggleSelect}
                 onToggleComplete={onToggleComplete}
                 onDelete={onDeleteTask}
                 onUpdateText={onUpdateTaskText}
+                onUpdateTask={onUpdateTask}
               />
             ))}
           </React.Fragment>
@@ -73,13 +75,14 @@ export default function TaskList({
     <ul id="todo-list">
       {sortedTasks.map((task, idx) => (
         <TaskItem
-          key={`${task.text}-${task.dueDate}-${idx}`}
+          key={task.id || `${task.text}-${task.dueDate}-${idx}`}
           task={task}
           isSelected={selectedIds.has(task.id)}
           onToggleSelect={onToggleSelect}
           onToggleComplete={onToggleComplete}
           onDelete={onDeleteTask}
           onUpdateText={onUpdateTaskText}
+          onUpdateTask={onUpdateTask}
         />
       ))}
     </ul>
