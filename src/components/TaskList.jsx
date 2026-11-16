@@ -12,7 +12,8 @@ export default function TaskList({
   currentSort,
   onToggleComplete,
   onDeleteTask,
-  onUpdateTaskText
+  onUpdateTaskText,
+  onUpdateTask
 }) {
   const visibleTasks = tasks
     .filter(task => {
@@ -71,6 +72,7 @@ export default function TaskList({
                 onToggleComplete={onToggleComplete}
                 onDelete={onDeleteTask}
                 onUpdateText={onUpdateTaskText}
+                onUpdateTask={onUpdateTask}
               />
             ))}
           </React.Fragment>
@@ -137,6 +139,7 @@ export default function TaskList({
           reorder={reorderEnabled ? getReorderProps(task, idx) : null}
           onDelete={onDeleteTask}
           onUpdateText={onUpdateTaskText}
+          onUpdateTask={onUpdateTask}
         />
       ))}
     </ul>

@@ -1,8 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useId } from 'react';
 import { isOverdue } from '../utils/taskUtils';
+import { getSubtaskProgress, formatSubtaskProgress } from '../utils/subtaskUtils';
+import SubtaskList from './SubtaskList';
 
-export default function TaskItem({ task, reorder, onToggleComplete, onDelete, onUpdateText }) {
+export default function TaskItem({ task, reorder, onToggleComplete, onDelete, onUpdateText, onUpdateTask }) {
   const [isEditing, setIsEditing] = useState(false);
+  const [showSubtasks, setShowSubtasks] = useState(false);
+  const panelUid = useId();
   const [editText, setEditText] = useState(task.text);
   const editInputRef = useRef(null);
   const moveUpRef = useRef(null);
@@ -68,6 +72,8 @@ export default function TaskItem({ task, reorder, onToggleComplete, onDelete, on
 
   const priorityClass = String(task.priority || 'medium').toLowerCase();
   const overdue = isOverdue(task);
+  const progress = getSubtaskProgress(task);
+  const panelId = `subtasks-${panelUid}`;
 
   return (
     <li className={rowClass} onDragOver={reorder?.onDragOver}>
@@ -110,6 +116,19 @@ export default function TaskItem({ task, reorder, onToggleComplete, onDelete, on
             onDoubleClick={() => setIsEditing(true)}
           >
             {`${task.text} | Due: ${task.dueDate || 'No date'}`}
+          </span>
+        )}
+
+        {progress.total > 0 && (
+          <span
+            className={`subtask-progress${progress.done === progress.total ? ' is-all-done' : ''}`}
+            role="img"
+            aria-label={`${progress.done} of ${progress.total} subtasks done`}
+          >
+            <span className="subtask-progress-bar" aria-hidden="true">
+              <span style={{ width: `${(progress.done / progress.total) * 100}%` }} />
+            </span>
+            <span aria-hidden="true">{formatSubtaskProgress(task)}</span>
           </span>
         )}
       </span>
@@ -159,6 +178,16 @@ export default function TaskItem({ task, reorder, onToggleComplete, onDelete, on
         </button>
         <button
           type="button"
+          className="subtask-toggle"
+          aria-expanded={showSubtasks}
+          aria-controls={panelId}
+          aria-label={`${showSubtasks ? 'Hide' : 'Show'} subtasks for ${task.text}`}
+          onClick={() => setShowSubtasks(prev => !prev)}
+        >
+          Subtasks
+        </button>
+        <button
+          type="button"
           className="done-button"
           onClick={() => onToggleComplete(task)}
         >
@@ -173,6 +202,10 @@ export default function TaskItem({ task, reorder, onToggleComplete, onDelete, on
           Delete
         </button>
       </div>
+
+      {showSubtasks && (
+        <SubtaskList task={task} panelId={panelId} onUpdateTask={onUpdateTask} />
+      )}
     </li>
   );
 }
