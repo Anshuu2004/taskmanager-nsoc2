@@ -15,6 +15,7 @@ import {
   undoMessage
 } from './src/utils/undoDelete.js';
 import { getVisibleTasks } from './src/utils/taskUtils.js';
+import { openDialog, closeDialog } from './src/utils/dialogUtils.js';
 
 const mk = (id, extra = {}) => ({
   id,
@@ -202,4 +203,47 @@ test('getVisibleTasks applies the filter and the search, case insensitive', () =
   assert.deepEqual(getVisibleTasks(tasks, 'overdue-task', ''), [c]);
   assert.deepEqual(getVisibleTasks(tasks, 'all', 'BUY'), [a, b]);
   assert.deepEqual(getVisibleTasks(tasks, 'active', 'buy'), [a]);
+});
+
+// A dialog element without showModal and close, like an older browser.
+function fakeLegacyDialog() {
+  const attrs = new Set();
+  return {
+    hasAttribute: (name) => attrs.has(name),
+    setAttribute: (name) => attrs.add(name),
+    removeAttribute: (name) => attrs.delete(name)
+  };
+}
+
+test('openDialog uses showModal when the browser has it', () => {
+  let calls = 0;
+  const dialog = { open: false, showModal() { calls += 1; this.open = true; } };
+  openDialog(dialog);
+  assert.equal(calls, 1);
+  assert.equal(dialog.open, true);
+});
+
+test('openDialog falls back to the open attribute without showModal', () => {
+  const dialog = fakeLegacyDialog();
+  assert.doesNotThrow(() => openDialog(dialog));
+  assert.equal(dialog.hasAttribute('open'), true);
+});
+
+test('openDialog does nothing when the dialog is already open or missing', () => {
+  let calls = 0;
+  openDialog({ open: true, showModal() { calls += 1; } });
+  assert.equal(calls, 0);
+  assert.doesNotThrow(() => openDialog(null));
+});
+
+test('closeDialog uses close when available and falls back without it', () => {
+  let calls = 0;
+  closeDialog({ open: true, close() { calls += 1; } });
+  assert.equal(calls, 1);
+
+  const dialog = fakeLegacyDialog();
+  openDialog(dialog);
+  assert.doesNotThrow(() => closeDialog(dialog));
+  assert.equal(dialog.hasAttribute('open'), false);
+  assert.doesNotThrow(() => closeDialog(null));
 });

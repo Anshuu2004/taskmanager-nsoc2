@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { openDialog, closeDialog } from '../utils/dialogUtils';
 
 /**
  * Small yes/no dialog. Same native dialog as the backup modal, so Esc and focus
@@ -10,8 +11,8 @@ export default function ConfirmDialog({ isOpen, title, message, confirmLabel, on
 
   useEffect(() => {
     const dialog = dialogRef.current;
-    if (isOpen && !dialog.open) dialog.showModal();
-    if (!isOpen && dialog.open) dialog.close();
+    if (isOpen) openDialog(dialog);
+    else closeDialog(dialog);
   }, [isOpen]);
 
   return (
