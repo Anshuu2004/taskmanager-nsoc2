@@ -8,6 +8,8 @@ import TaskList from './components/TaskList';
 import ChartsOverview from './components/ChartsOverview';
 import BackupModal from './components/BackupModal';
 import UndoToast from './components/UndoToast';
+import PomodoroTimer from './components/PomodoroTimer';
+import './components/prompt.css';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useTheme } from './hooks/useTheme';
 import { useUndoDelete } from './hooks/useUndoDelete';
@@ -27,6 +29,8 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentSort, setCurrentSort] = useState('default');
   const [, setLastRenderDate] = useState(getTodayDate());
+  const [taskId, setTaskId] = useState('');
+  const [taskIdPrompt, setTaskIdPrompt] = useState(false);
 
   // Automatic overdue refresh when midnight passes or tab becomes visible
   useEffect(() => {
@@ -120,6 +124,17 @@ export default function App() {
     setSearchQuery('');
   };
 
+  const handleSessionComplete = (sessionType, durationMinutes) => {
+    // Callback from PomodoroTimer when a session ends.
+    // We could optionally show a notification or update task progress,
+    // but we do NOT automatically mark tasks as completed unless explicitly designed.
+    // For now, just log the session completion.
+    // You could integrate with the engine here if desired.
+    // Example: recordTaskCompletion or streak updates could go here.
+    // For now, we just announce it.
+    // TODO: Add any desired session completion handling.
+  };
+
   return (
     <div className="app-shell">
       <Header
@@ -149,6 +164,42 @@ export default function App() {
         currentSort={currentSort}
         onSortChange={setCurrentSort}
       />
+
+      <PomodoroTimer
+        taskId={taskId || undefined}
+        onSessionComplete={handleSessionComplete}
+      />
+
+      {taskIdPrompt && (
+        <div id="pomodoro-task-id-prompt" className="pomodoro-task-id-prompt">
+          <label htmlFor="pomodoro-task-id-input" className="pomodoro-task-id-label">
+            Associate timer with task ID:
+            <input
+              id="pomodoro-task-id-input"
+              type="text"
+              value={taskId}
+              onChange={(e) => setTaskId(e.target.value)}
+              aria-label="Task ID to associate with timer"
+            />
+          </label>
+          <button
+            type="button"
+            className="pomodoro-task-id-btn"
+            onClick={() => setTaskIdPrompt(false)}
+            aria-label="Cancel"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="pomodoro-task-id-btn pomodoro-task-id-btn--primary"
+            onClick={() => setTaskIdPrompt(false)}
+            aria-label="Set task ID"
+          >
+            Set
+          </button>
+        </div>
+      )}
 
       {historyMode && (
         <FilterTabs
