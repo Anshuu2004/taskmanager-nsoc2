@@ -1,0 +1,146 @@
+/* ==========================================================================
+   Pomodoro Focus Timer Styles
+   ========================================================================== */
+
+.pomodoro-timer {
+  max-width: 420px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background-color: var(--surface);
+  color: var(--text);
+  font-family: var(--font);
+}
+
+.pomodoro-timer[sr-only] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Controls */
+.pomodoro-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.pomodoro-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background-color: var(--raised);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.pomodoro-btn:hover:not(:disabled) {
+  background-color: var(--active);
+  color: var(--text);
+  border-color: var(--border-focus);
+}
+
+.pomodoro-btn:focus-visible:not(:disabled) {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.pomodoro-btn:active:not(:disabled) {
+  transform: scale(0.96) !important;
+}
+
+.pomodoro-btn--play:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.pomodoro-btn--reset:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Disable state */
+.pomodoro-btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Display */
+.pomodoro-display {
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 16px 0;
+  text-align: center;
+  min-height: 64px;
+  line-height: 1;
+}
+
+/* Config panel */
+.pomodoro-config {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background-color: var(--raised);
+}
+
+.pomodoro-config label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.pomodoro-config input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background-color: var(--raised);
+  color: var(--text);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.pomodoro-config input:focus {
+  outline: 2px solid var(--border-focus);
+  outline-offset: -2px;
+}
+
+/* Session info */
+.pomodoro-session-info {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Task association */
+.pomodoro-task-association {
+  font-size: 12px;
+  color: var(--faint);
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .pomodoro-btn {
+    transition: none;
+  }
+}
