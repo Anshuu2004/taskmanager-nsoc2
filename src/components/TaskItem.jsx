@@ -3,12 +3,15 @@ import { isOverdue } from '../utils/taskUtils';
 import { getSubtaskProgress, formatSubtaskProgress } from '../utils/subtaskUtils';
 import SubtaskList from './SubtaskList';
 
-export default function TaskItem({ task, isSelected, onToggleSelect, onToggleComplete, onDelete, onUpdateText, onUpdateTask }) {
+export default function TaskItem({ task, isSelected, onToggleSelect, reorder, onToggleComplete, onDelete, onUpdateText, onUpdateTask }) {
   const [isEditing, setIsEditing] = useState(false);
   const [showSubtasks, setShowSubtasks] = useState(false);
   const panelUid = useId();
   const [editText, setEditText] = useState(task.text);
   const editInputRef = useRef(null);
+  const moveUpRef = useRef(null);
+  const moveDownRef = useRef(null);
+  const focusAfterMove = useRef(null);
 
   useEffect(() => {
     if (isEditing) {
@@ -16,6 +19,17 @@ export default function TaskItem({ task, isSelected, onToggleSelect, onToggleCom
       editInputRef.current?.select();
     }
   }, [isEditing]);
+
+  // A move re-inserts the row in the DOM, which drops keyboard focus, and the
+  // button itself gets disabled at the end of the list. Keep focus on this row.
+  useEffect(() => {
+    if (!focusAfterMove.current) return;
+    const [wanted, fallback] = focusAfterMove.current === 'up'
+      ? [moveUpRef.current, moveDownRef.current]
+      : [moveDownRef.current, moveUpRef.current];
+    focusAfterMove.current = null;
+    (wanted?.disabled ? fallback : wanted)?.focus();
+  });
 
   const handleSave = () => {
     const trimmed = editText.trim();
@@ -27,6 +41,20 @@ export default function TaskItem({ task, isSelected, onToggleSelect, onToggleCom
     setIsEditing(false);
   };
 
+  const handleMove = (direction, move) => {
+    focusAfterMove.current = direction;
+    move();
+  };
+
+  const handleDragStart = (e) => {
+    // Firefox only starts a drag with data set. The custom type stops the row
+    // from being dropped as text into the search box.
+    e.dataTransfer.setData('application/x-task-reorder', task.text);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setDragImage(e.currentTarget.closest('li'), 16, 16);
+    reorder.onDragStart();
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleSave();
@@ -36,13 +64,33 @@ export default function TaskItem({ task, isSelected, onToggleSelect, onToggleCom
     }
   };
 
+  const rowClass = [
+    task.completed && 'is-complete',
+    isSelected && 'is-selected',
+    reorder?.isDragging && 'is-dragging',
+    reorder?.dropPlace && `drop-${reorder.dropPlace}`
+  ].filter(Boolean).join(' ');
+
   const priorityClass = String(task.priority || 'medium').toLowerCase();
   const overdue = isOverdue(task);
   const progress = getSubtaskProgress(task);
   const panelId = `subtasks-${panelUid}`;
 
   return (
-    <li className={`${task.completed ? 'is-complete' : ''}${isSelected ? ' is-selected' : ''}`}>
+    <li className={rowClass} onDragOver={reorder?.onDragOver}>
+      {reorder && (
+        <span
+          className="drag-handle"
+          draggable="true"
+          title="Drag to reorder"
+          aria-hidden="true"
+          onDragStart={handleDragStart}
+          onDragEnd={reorder.onDragEnd}
+        >
+          &#8942;&#8942;
+        </span>
+      )}
+
       <label className="task-select">
         <input
           type="checkbox"
@@ -104,6 +152,32 @@ export default function TaskItem({ task, isSelected, onToggleSelect, onToggleCom
       )}
 
       <div className="action-buttons">
+        {reorder && (
+          <div className="move-buttons">
+            <button
+              ref={moveUpRef}
+              type="button"
+              className="move-button"
+              aria-label={`Move ${task.text} up`}
+              title="Move up"
+              disabled={!reorder.canMoveUp}
+              onClick={() => handleMove('up', reorder.onMoveUp)}
+            >
+              &uarr;
+            </button>
+            <button
+              ref={moveDownRef}
+              type="button"
+              className="move-button"
+              aria-label={`Move ${task.text} down`}
+              title="Move down"
+              disabled={!reorder.canMoveDown}
+              onClick={() => handleMove('down', reorder.onMoveDown)}
+            >
+              &darr;
+            </button>
+          </div>
+        )}
         <button
           type="button"
           className="edit-button"
