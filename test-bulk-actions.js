@@ -15,6 +15,7 @@ import {
   undoMessage
 } from './src/utils/undoDelete.js';
 import { getVisibleTasks } from './src/utils/taskUtils.js';
+import { moveTask } from './src/utils/reorderUtils.js';
 import { openDialog, closeDialog } from './src/utils/dialogUtils.js';
 
 const mk = (id, extra = {}) => ({
@@ -100,12 +101,22 @@ test('getNewlyCompleted skips tasks that are already done, so no double points',
   assert.deepEqual(getNewlyCompleted([a, b, c], new Set(['a', 'b'])), [a]);
 });
 
-test('getDeletedItems gives positions in the full array', () => {
+test('getDeletedItems gives positions in the full array and the task before each one', () => {
   const [a, b, c] = ['a', 'b', 'c'].map(id => mk(id));
   assert.deepEqual(getDeletedItems([a, b, c], new Set(['a', 'c'])), [
-    { task: a, index: 0 },
-    { task: c, index: 2 }
+    { task: a, index: 0, afterId: undefined },
+    { task: c, index: 2, afterId: 'b' }
   ]);
+});
+
+test('undo of a bulk delete puts tasks back next to their old neighbour after a reorder', () => {
+  const list = ['a', 'b', 'c', 'd'].map(id => mk(id));
+  const [a, , , d] = list;
+  const s = bulkDelete(list, [], ['b', 'c']);
+  // d is dragged to the top before the undo, so the saved indexes are stale now.
+  const moved = moveTask(s.tasks, d, a, 'before');
+  assert.deepEqual(moved.map(t => t.id), ['d', 'a']);
+  assert.deepEqual(undo(moved, s.stack).tasks.map(t => t.id), ['d', 'a', 'b', 'c']);
 });
 
 test('toggleSelection adds and removes an id and returns a new Set', () => {

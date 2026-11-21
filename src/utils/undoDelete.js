@@ -71,7 +71,7 @@ export function restoreTask(tasks, entry) {
  * them back and a big bulk delete cannot push older entries (or itself) off the
  * stack. Items are kept lowest index first, see restoreEntry.
  * @param {Array<{task: object, index: number}>} stack
- * @param {Array<{task: object, index: number}>} items
+ * @param {Array<{task: object, index: number, afterId?: string}>} items
  * @returns {Array} a new stack
  */
 export function pushDeletedGroup(stack, items) {

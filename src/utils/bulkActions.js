@@ -43,12 +43,16 @@ export function getNewlyCompleted(tasks, selectedIds) {
 }
 
 /**
- * The selected tasks with their position in the full array, in the shape the
- * undo stack wants.
- * @returns {Array<{task: object, index: number}>}
+ * The selected tasks with their position in the full array and the id of the
+ * task right before each one, in the shape the undo stack wants. The neighbour
+ * id is what lets undo put a task back in the right spot after a reorder, same
+ * as a single delete.
+ * @returns {Array<{task: object, index: number, afterId?: string}>}
  */
 export function getDeletedItems(tasks, selectedIds) {
-  return tasks.flatMap((task, index) => (selectedIds.has(task.id) ? [{ task, index }] : []));
+  return tasks.flatMap((task, index) =>
+    selectedIds.has(task.id) ? [{ task, index, afterId: tasks[index - 1]?.id }] : []
+  );
 }
 
 /**
