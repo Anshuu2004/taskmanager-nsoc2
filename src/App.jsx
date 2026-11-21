@@ -9,12 +9,15 @@ import ChartsOverview from './components/ChartsOverview';
 import BackupModal from './components/BackupModal';
 import ShortcutsDialog from './components/ShortcutsDialog';
 import UndoToast from './components/UndoToast';
+import PomodoroTimer from './components/PomodoroTimer';
+import './components/prompt.css';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useTheme } from './hooks/useTheme';
 import { useUndoDelete } from './hooks/useUndoDelete';
-import { getTodayDate } from './utils/taskUtils';
+import { getTodayDate, createTaskId } from './utils/taskUtils';
 import { restoreTask } from './utils/undoDelete';
+import { canReorder, moveTask, getMoveMessage } from './utils/reorderUtils';
 import { loadEngineState, recordTaskCompletion, calcStreak, getBalance } from './utils/streakEngine';
 
 export default function App() {
@@ -29,7 +32,11 @@ export default function App() {
   const [currentFilter, setCurrentFilter] = useState('active');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentSort, setCurrentSort] = useState('default');
+  const [moveMessage, setMoveMessage] = useState('');
+  const reorderEnabled = canReorder(currentFilter, searchQuery, currentSort);
   const [, setLastRenderDate] = useState(getTodayDate());
+  const [taskId, setTaskId] = useState('');
+  const [taskIdPrompt, setTaskIdPrompt] = useState(false);
 
   // Automatic overdue refresh when midnight passes or tab becomes visible
   useEffect(() => {
@@ -86,7 +93,7 @@ export default function App() {
   const handleDeleteTask = (taskToDelete) => {
     const index = tasks.indexOf(taskToDelete);
     if (index === -1) return;
-    undoDelete.recordDelete(taskToDelete, index);
+    undoDelete.recordDelete(taskToDelete, index, tasks[index - 1]?.id);
     setTasks(prev => prev.filter(task => task !== taskToDelete));
   };
 
@@ -96,9 +103,10 @@ export default function App() {
   };
 
   // An import replaces the whole list, so saved positions no longer mean anything.
+  // Imported records have no id yet, and selecting and moving tasks go by id.
   const handleTasksUpdate = (nextTasks) => {
     undoDelete.dismiss();
-    setTasks(nextTasks);
+    setTasks(nextTasks.map(task => (task.id ? task : { ...task, id: createTaskId() })));
   };
 
   const handleUpdateTaskText = (taskToUpdate, newText) => {
@@ -119,8 +127,27 @@ export default function App() {
     setHistoryMode(prev => !prev);
   };
 
+  // The tasks array is saved as is, so the new order survives a refresh.
+  const handleMoveTask = (task, target, place) => {
+    const next = moveTask(tasks, task, target, place);
+    if (next === tasks) return;
+    setTasks(next);
+    setMoveMessage(getMoveMessage(next, task));
+  };
+
   const handleClearSearch = () => {
     setSearchQuery('');
+  };
+
+  const handleSessionComplete = (sessionType, durationMinutes) => {
+    // Callback from PomodoroTimer when a session ends.
+    // We could optionally show a notification or update task progress,
+    // but we do NOT automatically mark tasks as completed unless explicitly designed.
+    // For now, just log the session completion.
+    // You could integrate with the engine here if desired.
+    // Example: recordTaskCompletion or streak updates could go here.
+    // For now, we just announce it.
+    // TODO: Add any desired session completion handling.
   };
 
   return (
@@ -154,6 +181,42 @@ export default function App() {
         onSortChange={setCurrentSort}
       />
 
+      <PomodoroTimer
+        taskId={taskId || undefined}
+        onSessionComplete={handleSessionComplete}
+      />
+
+      {taskIdPrompt && (
+        <div id="pomodoro-task-id-prompt" className="pomodoro-task-id-prompt">
+          <label htmlFor="pomodoro-task-id-input" className="pomodoro-task-id-label">
+            Associate timer with task ID:
+            <input
+              id="pomodoro-task-id-input"
+              type="text"
+              value={taskId}
+              onChange={(e) => setTaskId(e.target.value)}
+              aria-label="Task ID to associate with timer"
+            />
+          </label>
+          <button
+            type="button"
+            className="pomodoro-task-id-btn"
+            onClick={() => setTaskIdPrompt(false)}
+            aria-label="Cancel"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="pomodoro-task-id-btn pomodoro-task-id-btn--primary"
+            onClick={() => setTaskIdPrompt(false)}
+            aria-label="Set task ID"
+          >
+            Set
+          </button>
+        </div>
+      )}
+
       {historyMode && (
         <FilterTabs
           currentFilter={currentFilter}
@@ -165,12 +228,21 @@ export default function App() {
         tasks={tasks}
         currentFilter={currentFilter}
         searchQuery={searchQuery}
+        reorderEnabled={reorderEnabled}
+        onMoveTask={handleMoveTask}
         currentSort={currentSort}
         onToggleComplete={handleToggleComplete}
         onDeleteTask={handleDeleteTask}
         onUpdateTaskText={handleUpdateTaskText}
         onUpdateTask={handleUpdateTask}
       />
+
+      {!reorderEnabled && tasks.length > 0 && (
+        <p className="reorder-hint">
+          To reorder tasks, open the Active list with no search and sort set to Default.
+        </p>
+      )}
+      <p className="visually-hidden" role="status">{moveMessage}</p>
 
       {historyMode && <ChartsOverview tasks={tasks} isLight={isLight} />}
 
